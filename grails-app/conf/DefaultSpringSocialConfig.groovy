@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 springsocial {
-    postSignInUri = "/"
-    postDisconnectUri = "/"
-
-    ss_oauth_return_url = "/"
-
     twitter.page.connect = "/springsocial/twitter/connect"
     twitter.page.connectedHome = "/springSocialTwitter/index"
     twitter.page.profile = "/springSocialTwitter/index"

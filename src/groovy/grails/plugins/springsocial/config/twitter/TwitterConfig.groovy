@@ -37,6 +37,7 @@ class TwitterConfig {
 
     @Bean
     String foo() {
+        println "Configuring SpringSocial Twitter"
         def twitterConfig = SpringSocialUtils.config.twitter
         def consumerKey = twitterConfig.consumerKey
         def consumerSecret = twitterConfig.consumerSecret

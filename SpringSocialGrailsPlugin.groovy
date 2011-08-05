@@ -31,13 +31,13 @@ class SpringSocialGrailsPlugin {
     // TODO Fill in these fields
     def author = "Domingo Suarez Torres"
     def authorEmail = "domingo.suarez@gmail.com"
-    def title = "Spring Social"
+    def title = "Spring Social Core"
     def description = '''\\
-Spring Social plugin.
+Spring Social Core plugin.
 '''
 
     // URL to the plugin's documentation
-    def documentation = "http://grails.org/plugin/spring-social"
+    def documentation = "http://grails.org/plugin/spring-social-core"
 
     def doWithWebDescriptor = { xml ->
         // TODO Implement additions to web.xml (optional), this event occurs before 
