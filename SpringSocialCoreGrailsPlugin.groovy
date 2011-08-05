@@ -44,8 +44,6 @@ Spring Social Core plugin.
     }
 
     def doWithSpring = {
-        println "Configuring SpringSocial Core"
-
         xmlns context: "http://www.springframework.org/schema/context"
         context.'component-scan'('base-package': "grails.plugins.springsocial.config.core")
         context.'component-scan'('base-package': "grails.plugins.springsocial.config.twitter")
