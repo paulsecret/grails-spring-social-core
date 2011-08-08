@@ -17,8 +17,6 @@ package grails.plugins.springsocial
 import grails.plugins.springsocial.connect.web.GrailsConnectSupport
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
 import org.springframework.social.connect.DuplicateConnectionException
-import org.springframework.social.connect.support.OAuth1ConnectionFactory
-import org.springframework.social.connect.support.OAuth2ConnectionFactory
 import org.springframework.social.connect.web.ProviderSignInAttempt
 import org.springframework.social.oauth1.OAuthToken
 import org.springframework.web.context.request.RequestAttributes
@@ -58,7 +56,7 @@ class SpringSocialConnectController {
 
     def disconnect = {
         def providerId = params.providerId
-        connectionRepository.removeConnectionsToProvider(providerId)
+        connectionRepository.removeConnections(providerId)
         redirect(uri: SpringSocialUtils.config.postDisconnectUri)
     }
 
