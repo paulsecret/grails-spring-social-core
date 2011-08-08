@@ -6,3 +6,6 @@ plugin.xml
 target/
 *.zip
 *.tld
+devDB.log
+devDB.properties
+devDB.script
