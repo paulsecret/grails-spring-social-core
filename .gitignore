@@ -9,3 +9,6 @@ target/
 devDB.log
 devDB.properties
 devDB.script
+.classpath
+.project
+.settings/
