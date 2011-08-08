@@ -17,7 +17,7 @@ import grails.plugins.springsocial.SpringSecuritySigninService
 
 class SpringSocialCoreGrailsPlugin {
     // the plugin version
-    def version = "0.1"
+    def version = "0.1.1"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3 > *"
     // the other plugins this plugin depends on
@@ -46,7 +46,6 @@ Spring Social Core plugin.
     def doWithSpring = {
         xmlns context: "http://www.springframework.org/schema/context"
         context.'component-scan'('base-package': "grails.plugins.springsocial.config.core")
-        context.'component-scan'('base-package': "grails.plugins.springsocial.config.twitter")
 
         signInService(SpringSecuritySigninService)
     }
