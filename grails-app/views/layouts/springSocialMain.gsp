@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Spring Social Grails Plugin - <g:layoutTitle default="Grails"/></title>
+    <title>Grails Spring Social Core Plugin - <g:layoutTitle default="Grails"/></title>
     <link rel="stylesheet" href="${resource(dir: 'css/springsocial', file: 'page.css')}"/>
     <link rel="stylesheet" href="${resource(dir: 'css/springsocial', file: 'form.css')}"/>
     <g:layoutHead/>
@@ -9,12 +9,17 @@
 
 <body>
 <div id="header">
-    <h1>Spring Social Grails plugin</h1>
+    <h1>Grails Spring Social Core Plugin</h1>
 </div>
 
-<div id="leftNav">
-    <g:render template="/springsocial/twitter/menu"/>
-</div>
+<g:set var="leftMenu" value="${pageProperty(name:'page.leftMenu')}"/>
+
+<g:if test="${leftMenu}">
+    <div id="leftNav">
+        <g:render template="${leftMenu}"/>
+    </div>
+</g:if>
+
 
 <div id="content">
     <g:layoutBody/>
