@@ -56,6 +56,17 @@ class GrailsConnectSupport extends ConnectSupport {
         return authorizeUrl;
     }
 
+	private String buildOAuth2Url(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
+		OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
+		def providerId = connectionFactory.getProviderId()
+		OAuth2Parameters parameters = new OAuth2Parameters(callbackUrl(request, providerId), request.getParameter("scope"));
+		if (useAuthenticateUrl) { 
+			return oauthOperations.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);						
+		} else {
+			return oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, parameters);			
+		}
+	}
+
     private String callbackUrl(NativeWebRequest request, String providerId) {
         "${home}ssconnect/${providerId}".toString()
     }
