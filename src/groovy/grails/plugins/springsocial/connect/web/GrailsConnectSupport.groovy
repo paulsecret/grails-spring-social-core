@@ -29,14 +29,11 @@ import org.springframework.social.oauth2.OAuth2Operations
 import org.springframework.social.oauth2.OAuth2Parameters
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.context.request.RequestAttributes
-import org.springframework.social.connect.support.OAuth2ConnectionFactory
-import org.springframework.social.oauth2.OAuth2Operations
-import org.springframework.social.oauth2.OAuth2Parameters
 
 class GrailsConnectSupport extends ConnectSupport {
     private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
     String home
-	Boolean useAuthenticateUrl = true
+    Boolean useAuthenticateUrl
 
     public String buildOAuthUrl(ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
         if (connectionFactory instanceof OAuth1ConnectionFactory) {
@@ -48,12 +45,12 @@ class GrailsConnectSupport extends ConnectSupport {
         }
     }
 
-	public Connection<?> completeConnection(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
-		String code = request.getParameter("code");
-		def providerId = connectionFactory.getProviderId()
-		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(request, providerId), null);
-		return connectionFactory.createConnection(accessGrant);		
-	}
+    public Connection<?> completeConnection(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
+        String code = request.getParameter("code");
+        def providerId = connectionFactory.getProviderId()
+        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(request, providerId), null);
+        return connectionFactory.createConnection(accessGrant);
+    }
 
 
     private String buildOAuth1Url(OAuth1ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
@@ -72,16 +69,16 @@ class GrailsConnectSupport extends ConnectSupport {
         return authorizeUrl;
     }
 
-	private String buildOAuth2Url(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
-		OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-		def providerId = connectionFactory.getProviderId()
-		OAuth2Parameters parameters = new OAuth2Parameters(callbackUrl(request, providerId), request.getParameter("scope"));
-		if (useAuthenticateUrl) { 
-			return oauthOperations.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);						
-		} else {
-			return oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, parameters);			
-		}
-	}
+    private String buildOAuth2Url(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
+        OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
+        def providerId = connectionFactory.getProviderId()
+        OAuth2Parameters parameters = new OAuth2Parameters(callbackUrl(request, providerId), request.getParameter("scope"));
+        if (useAuthenticateUrl) {
+            return oauthOperations.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);
+        } else {
+            return oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, parameters);
+        }
+    }
 
     private String callbackUrl(NativeWebRequest request, String providerId) {
         "${home}ssconnect/${providerId}".toString()
