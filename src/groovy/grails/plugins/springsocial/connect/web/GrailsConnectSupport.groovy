@@ -14,6 +14,7 @@
  */
 package grails.plugins.springsocial.connect.web
 
+import org.springframework.social.connect.Connection
 import org.springframework.social.connect.ConnectionFactory
 import org.springframework.social.connect.support.OAuth1ConnectionFactory
 import org.springframework.social.connect.support.OAuth2ConnectionFactory
@@ -22,12 +23,20 @@ import org.springframework.social.oauth1.OAuth1Operations
 import org.springframework.social.oauth1.OAuth1Parameters
 import org.springframework.social.oauth1.OAuth1Version
 import org.springframework.social.oauth1.OAuthToken
+import org.springframework.social.oauth2.AccessGrant
+import org.springframework.social.oauth2.GrantType
+import org.springframework.social.oauth2.OAuth2Operations
+import org.springframework.social.oauth2.OAuth2Parameters
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.context.request.RequestAttributes
+import org.springframework.social.connect.support.OAuth2ConnectionFactory
+import org.springframework.social.oauth2.OAuth2Operations
+import org.springframework.social.oauth2.OAuth2Parameters
 
 class GrailsConnectSupport extends ConnectSupport {
     private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
     String home
+	Boolean useAuthenticateUrl = true
 
     public String buildOAuthUrl(ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
         if (connectionFactory instanceof OAuth1ConnectionFactory) {
@@ -38,6 +47,13 @@ class GrailsConnectSupport extends ConnectSupport {
             throw new IllegalArgumentException("ConnectionFactory not supported");
         }
     }
+
+	public Connection<?> completeConnection(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
+		String code = request.getParameter("code");
+		def providerId = connectionFactory.getProviderId()
+		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(request, providerId), null);
+		return connectionFactory.createConnection(accessGrant);		
+	}
 
 
     private String buildOAuth1Url(OAuth1ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
