@@ -47,6 +47,7 @@ class SpringSocialConnectController {
         def uriRedirect = session.ss_oauth_redirect_callback
         def config = SpringSocialUtils.config.get(providerId)
         def uri = uriRedirect ?: config.page.connectedHome
+		
         def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
         def connection = webSupport.completeConnection(connectionFactory, new GrailsWebRequest(request, response, servletContext))
 
