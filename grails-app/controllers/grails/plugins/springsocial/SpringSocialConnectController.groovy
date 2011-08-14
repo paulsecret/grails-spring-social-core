@@ -17,8 +17,6 @@ package grails.plugins.springsocial
 import grails.plugins.springsocial.connect.web.GrailsConnectSupport
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
 import org.springframework.social.connect.DuplicateConnectionException
-import org.springframework.social.connect.web.ProviderSignInAttempt
-import org.springframework.social.oauth1.OAuthToken
 import org.springframework.web.context.request.RequestAttributes
 
 class SpringSocialConnectController {
@@ -47,7 +45,7 @@ class SpringSocialConnectController {
         def uriRedirect = session.ss_oauth_redirect_callback
         def config = SpringSocialUtils.config.get(providerId)
         def uri = uriRedirect ?: config.page.connectedHome
-		
+
         def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
         def connection = webSupport.completeConnection(connectionFactory, new GrailsWebRequest(request, response, servletContext))
 
