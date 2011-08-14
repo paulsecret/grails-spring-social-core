@@ -1,7 +1,6 @@
 .svn
 .idea/
-grails-spring-social-grailsPlugins.iml
-grails-spring-social.iml
+*.iml
 plugin.xml
 target/
 *.zip
