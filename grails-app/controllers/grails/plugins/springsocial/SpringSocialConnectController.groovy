@@ -69,20 +69,4 @@ class SpringSocialConnectController {
             request.setAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
         }
     }
-
-    private String handleSignIn(connection, session) {
-        String localUserId = usersConnectionRepository.findUserIdWithConnection(connection)
-        if (localUserId == null) {
-            def signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, connectionRepository)
-            session.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt)
-        }
-        g.createLink(uri: SpringSocialUtils.config.postSignInUri)
-    }
-
-    private OAuthToken extractCachedRequestToken(session) {
-        def requestToken = session.oauthToken
-        session.removeAttribute('oauthToken')
-        requestToken
-    }
-
 }
