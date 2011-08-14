@@ -23,7 +23,7 @@ body {
 }
 
 #content {
-	margin-left: 170px;
+	margin-left: 10px;
 }
 
 a {
@@ -31,8 +31,7 @@ a {
 }
 
 ul.menu li {
-	list-style: none;
-	font-size: 10pt;
+
 }
 
 div.feed {
