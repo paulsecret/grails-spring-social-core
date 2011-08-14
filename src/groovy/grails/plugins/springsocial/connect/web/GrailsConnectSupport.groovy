@@ -37,42 +37,44 @@ class GrailsConnectSupport extends ConnectSupport {
 
     public String buildOAuthUrl(ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
         if (connectionFactory instanceof OAuth1ConnectionFactory) {
-            return buildOAuth1Url((OAuth1ConnectionFactory<?>) connectionFactory, request);
+            return buildOAuth1Url((OAuth1ConnectionFactory<?>) connectionFactory, request)
         } else if (connectionFactory instanceof OAuth2ConnectionFactory) {
-            return buildOAuth2Url((OAuth2ConnectionFactory<?>) connectionFactory, request);
+            return buildOAuth2Url((OAuth2ConnectionFactory<?>) connectionFactory, request)
         } else {
-            throw new IllegalArgumentException("ConnectionFactory not supported");
+            throw new IllegalArgumentException("ConnectionFactory not supported")
         }
     }
 
     public Connection<?> completeConnection(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
-        String code = request.getParameter("code");
+        String code = request.getParameter("code")
         def providerId = connectionFactory.getProviderId()
-        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(request, providerId), null);
-        return connectionFactory.createConnection(accessGrant);
+        def curl = callbackUrl(request, providerId)
+        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, curl, null)
+        return connectionFactory.createConnection(accessGrant)
     }
 
 
     private String buildOAuth1Url(OAuth1ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
-        OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
-        OAuthToken requestToken;
-        String authorizeUrl;
+        OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations()
+        OAuthToken requestToken
+        String authorizeUrl
         def providerId = connectionFactory.getProviderId()
         if (oauthOperations.getVersion() == OAuth1Version.CORE_10_REVISION_A) {
-            requestToken = oauthOperations.fetchRequestToken(callbackUrl(request, providerId), null);
-            authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), OAuth1Parameters.NONE);
+            requestToken = oauthOperations.fetchRequestToken(callbackUrl(request, providerId), null)
+            authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), OAuth1Parameters.NONE)
         } else {
-            requestToken = oauthOperations.fetchRequestToken(null, null);
-            authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), new OAuth1Parameters(callbackUrl(request, providerId)));
+            requestToken = oauthOperations.fetchRequestToken(null, null)
+            authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), new OAuth1Parameters(callbackUrl(request, providerId)))
         }
-        request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, RequestAttributes.SCOPE_SESSION);
-        return authorizeUrl;
+        request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, RequestAttributes.SCOPE_SESSION)
+        return authorizeUrl
     }
 
     private String buildOAuth2Url(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
         OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
         def providerId = connectionFactory.getProviderId()
-        OAuth2Parameters parameters = new OAuth2Parameters(callbackUrl(request, providerId), request.getParameter("scope"));
+        def curl = callbackUrl(request, providerId)
+        OAuth2Parameters parameters = new OAuth2Parameters(curl, request.getParameter("scope"));
         if (useAuthenticateUrl) {
             return oauthOperations.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);
         } else {
