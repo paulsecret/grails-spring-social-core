@@ -27,12 +27,11 @@ class SpringSocialConnectController {
     def connectionFactoryLocator
     def connectionRepository
 
-    def webSupport = new GrailsConnectSupport()
+    def webSupport = new GrailsConnectSupport(home: g.createLink(uri: "/", absolute: true))
 
     static allowedMethods = [connect: 'POST', oauthCallback: 'GET', disconnect: 'DELETE']
 
     def connect = {
-        webSupport.home = g.createLink(uri: "/", absolute: true)
         def providerId = params.providerId
         def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
         def nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
