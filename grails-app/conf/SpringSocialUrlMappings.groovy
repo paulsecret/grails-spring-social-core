@@ -16,11 +16,11 @@ class SpringSocialUrlMappings {
 
     static mappings = {
 
-        name springSocialConnect: "/ssconnect/${providerId}" {
+        name springSocialConnect: "/ssconnect/$providerId/$providerUserId?" {
             controller = 'springSocialConnect'
             action = [GET: "oauthCallback", POST: 'connect', DELETE: "disconnect",]
         }
-        name springSocialSignIn: "/sssignin/${providerId}" {
+        name springSocialSignIn: "/sssignin/$providerId" {
             controller = 'springSocialProviderSignIn'
             action = [GET: "oauthCallback", POST: 'withProvider', DELETE: "disconnect",]
         }
