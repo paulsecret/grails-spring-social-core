@@ -16,6 +16,7 @@ package grails.plugins.springsocial
 
 import grails.plugins.springsocial.connect.web.GrailsConnectSupport
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
+import org.springframework.social.connect.ConnectionKey
 import org.springframework.social.connect.DuplicateConnectionException
 import org.springframework.web.context.request.RequestAttributes
 
@@ -56,11 +57,21 @@ class SpringSocialConnectController {
 
   def disconnect = {
     def providerId = params.providerId
+    def providerUserId = params.providerUserId
     assert providerId, "The providerId is required"
-    if (log.isInfoEnabled()) {
-      log.info("Disconecting from ${providerId}")
+
+    if (providerUserId) {
+      if (log.isInfoEnabled()) {
+        log.info("Disconecting from ${providerId} to ${providerUserId}")
+      }
+      connectionRepository.removeConnection(new ConnectionKey(providerId, providerUserId));
+    } else {
+      if (log.isInfoEnabled()) {
+        log.info("Disconecting from ${providerId}")
+      }
+      connectionRepository.removeConnections(providerId)
     }
-    connectionRepository.removeConnections(providerId)
+
     def postDisconnectUri = params.ss_post_disconnect_uri ?: cfg.postDisconnectUri
     if (log.isInfoEnabled()) {
       log.info("redirecting to ${postDisconnectUri}")
