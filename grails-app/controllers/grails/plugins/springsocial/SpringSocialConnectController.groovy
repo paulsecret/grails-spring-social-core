@@ -21,59 +21,59 @@ import org.springframework.web.context.request.RequestAttributes
 
 class SpringSocialConnectController {
 
-    private static final String DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE = "_duplicateConnectionException"
-    private static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social.addConnection.duplicate"
+  private static final String DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE = "_duplicateConnectionException"
+  private static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social.addConnection.duplicate"
 
-    def connectionFactoryLocator
-    def connectionRepository
-    def grailsApplication
-    def cfg = grailsApplication.mergedConfig.asMap(true).grails.plugin.springsocial
+  def connectionFactoryLocator
+  def connectionRepository
+  def grailsApplication
+  def cfg = grailsApplication.mergedConfig.asMap(true).grails.plugin.springsocial
 
-    def webSupport = new GrailsConnectSupport(home: g.createLink(uri: "/", absolute: true))
+  def webSupport = new GrailsConnectSupport(home: g.createLink(uri: "/", absolute: true))
 
-    static allowedMethods = [connect: 'POST', oauthCallback: 'GET', disconnect: 'DELETE']
+  static allowedMethods = [connect: 'POST', oauthCallback: 'GET', disconnect: 'DELETE']
 
-    def connect = {
-        def providerId = params.providerId
-        def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
-        def nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
-        def url = webSupport.buildOAuthUrl(connectionFactory, nativeWebRequest)
-        redirect url: url
+  def connect = {
+    def providerId = params.providerId
+    def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
+    def nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
+    def url = webSupport.buildOAuthUrl(connectionFactory, nativeWebRequest)
+    redirect url: url
+  }
+
+  def oauthCallback = {
+    def providerId = params.providerId
+    def uriRedirect = session.ss_oauth_redirect_callback
+    def config = cfg.get(providerId)
+    def uri = uriRedirect ?: config.page.connectedHome
+
+    def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
+    def connection = webSupport.completeConnection(connectionFactory, new GrailsWebRequest(request, response, servletContext))
+
+    addConnection(connection, connectionFactory, request)
+    redirect(uri: uri)
+  }
+
+  def disconnect = {
+    def providerId = params.providerId
+    assert providerId, "The providerId is required"
+    if (log.isInfoEnabled()) {
+      log.info("Disconecting from ${providerId}")
     }
-
-    def oauthCallback = {
-        def providerId = params.providerId
-        def uriRedirect = session.ss_oauth_redirect_callback
-        def config = cfg.get(providerId)
-        def uri = uriRedirect ?: config.page.connectedHome
-
-        def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
-        def connection = webSupport.completeConnection(connectionFactory, new GrailsWebRequest(request, response, servletContext))
-
-        addConnection(connection, connectionFactory, request)
-        redirect(uri: uri)
+    connectionRepository.removeConnections(providerId)
+    def postDisconnectUri = params.ss_post_disconnect_uri ?: cfg.postDisconnectUri
+    if (log.isInfoEnabled()) {
+      log.info("redirecting to ${postDisconnectUri}")
     }
+    redirect(uri: postDisconnectUri)
+  }
 
-    def disconnect = {
-        def providerId = params.providerId
-        assert providerId, "The providerId is required"
-        if(log.isInfoEnabled()) {
-            log.info("Disconecting from ${providerId}")
-        }
-        connectionRepository.removeConnections(providerId)
-        def postDisconnectUri = params.ss_post_disconnect_uri ?: cfg.postDisconnectUri
-        if(log.isInfoEnabled()) {
-            log.info("redirecting to ${postDisconnectUri}")
-        }
-        redirect(uri: postDisconnectUri)
+  private void addConnection(connection, connectionFactory, request) {
+    try {
+      connectionRepository.addConnection(connection)
+      //postConnect(connectionFactory, connection, request)
+    } catch (DuplicateConnectionException e) {
+      request.setAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
     }
-
-    private void addConnection(connection, connectionFactory, request) {
-        try {
-            connectionRepository.addConnection(connection)
-            //postConnect(connectionFactory, connection, request)
-        } catch (DuplicateConnectionException e) {
-            request.setAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
-        }
-    }
+  }
 }
