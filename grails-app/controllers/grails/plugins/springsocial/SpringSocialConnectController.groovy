@@ -26,6 +26,8 @@ class SpringSocialConnectController {
 
     def connectionFactoryLocator
     def connectionRepository
+    def grailsApplication
+    def cfg = grailsApplication.mergedConfig.asMap(true).grails.plugin.springsocial
 
     def webSupport = new GrailsConnectSupport(home: g.createLink(uri: "/", absolute: true))
 
@@ -42,7 +44,7 @@ class SpringSocialConnectController {
     def oauthCallback = {
         def providerId = params.providerId
         def uriRedirect = session.ss_oauth_redirect_callback
-        def config = SpringSocialUtils.config.get(providerId)
+        def config = cfg.get(providerId)
         def uri = uriRedirect ?: config.page.connectedHome
 
         def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
@@ -54,8 +56,16 @@ class SpringSocialConnectController {
 
     def disconnect = {
         def providerId = params.providerId
+        assert providerId, "The providerId is required"
+        if(log.isInfoEnabled()) {
+            log.info("Disconecting from ${providerId}")
+        }
         connectionRepository.removeConnections(providerId)
-        redirect(uri: SpringSocialUtils.config.postDisconnectUri)
+        def postDisconnectUri = params.ss_post_disconnect_uri ?: cfg.postDisconnectUri
+        if(log.isInfoEnabled()) {
+            log.info("redirecting to ${postDisconnectUri}")
+        }
+        redirect(uri: postDisconnectUri)
     }
 
     private void addConnection(connection, connectionFactory, request) {
