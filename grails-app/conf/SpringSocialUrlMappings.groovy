@@ -14,15 +14,15 @@
  */
 class SpringSocialUrlMappings {
 
-    static mappings = {
+  static mappings = {
 
-        name springSocialConnect: "/ssconnect/$providerId/$providerUserId?" {
-            controller = 'springSocialConnect'
-            action = [GET: "oauthCallback", POST: 'connect', DELETE: "disconnect",]
-        }
-        name springSocialSignIn: "/sssignin/$providerId" {
-            controller = 'springSocialProviderSignIn'
-            action = [GET: "oauthCallback", POST: 'withProvider', DELETE: "disconnect",]
-        }
+    name springSocialConnect: "/ssconnect/$providerId/$providerUserId?" {
+      controller = 'springSocialConnect'
+      action = [GET: "oauthCallback", POST: 'connect', DELETE: "disconnect",]
     }
+    name springSocialSignIn: "/sssignin/$providerId" {
+      controller = 'springSocialProviderSignIn'
+      action = [GET: "oauthCallback", POST: 'withProvider', DELETE: "disconnect",]
+    }
+  }
 }
