@@ -22,7 +22,7 @@ class SpringSocialCoreGrailsPlugin {
   def grailsVersion = "1.3.0 > *"
   // the other plugins this plugin depends on
   def dependsOn = [pluginConfig: '0.1.4 > *', springSecurityCore: '1.2 > *']
-  def loadAfter = ['springSecurityCore']
+  def loadAfter = ['springSecurityCore', 'pluginConfig']
   // resources that are excluded from plugin packaging
   def pluginExcludes = [
       "grails-app/views/error.gsp",
