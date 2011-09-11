@@ -19,7 +19,7 @@ class SpringSocialCoreGrailsPlugin {
   // the plugin version
   def version = "0.1.5"
   // the version or versions of Grails the plugin is designed for
-  def grailsVersion = "1.3 > *"
+  def grailsVersion = "1.3.0 > *"
   // the other plugins this plugin depends on
   def dependsOn = [pluginConfig: '0.1.4 > *', springSecurityCore: '1.2 > *']
   def loadAfter = ['springSecurityCore']
@@ -41,6 +41,12 @@ Spring Social Core plugin.
 
   // URL to the plugin's documentation
   def documentation = "http://grails.org/plugin/spring-social-core"
+
+  def license = "APACHE"
+  def organization = [name: "SynergyJ", url: "http://synergyj.com/"]
+  def developers = [[name: "Domingo Suarez Torres", email: "domingo.suarez@gmail.com"], [name: "Jose Juan Reyes Zuniga", email: "neodevelop@gmail.com"]]
+  def scm = [url: "https://github.com/synergyj/grails-spring-social-core"]
+  def issueManagement = [system: "GITHUB", url: "https://github.com/synergyj/grails-spring-social-core/issues"]
 
   def doWithWebDescriptor = { xml ->
     // TODO Implement additions to web.xml (optional), this event occurs before
