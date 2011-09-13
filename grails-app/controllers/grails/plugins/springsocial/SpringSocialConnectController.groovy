@@ -27,8 +27,6 @@ class SpringSocialConnectController {
 
   def connectionFactoryLocator
   def connectionRepository
-  def grailsApplication
-  def cfg = grailsApplication.mergedConfig.asMap(true).grails.plugin.springsocial
 
   def webSupport = new GrailsConnectSupport(home: g.createLink(uri: "/", absolute: true))
 
@@ -44,8 +42,23 @@ class SpringSocialConnectController {
 
   def oauthCallback = {
     def providerId = params.providerId
+    def config = SpringSocialUtils.config.get(providerId)
+    def denied = params.denied
+
+    if (denied) {
+      //TODO: Document this parameters
+      def uriRedirectOnDenied = session.ss_oauth_redirect_callback_on_denied ?: config.page.deniedHome
+      if (log.isInfoEnabled()) {
+        log.info("The user has denied accesss to ${providerId} profile. Redirecting to uri: ${uriRedirectOnDenied}")
+      }
+      redirect(uri: uriRedirectOnDenied)
+      return
+    }
+
+    //TODO: Document this parameter
     def uriRedirect = session.ss_oauth_redirect_callback
-    def config = cfg.get(providerId)
+
+    //TODO: Document this parameter
     def uri = uriRedirect ?: config.page.connectedHome
 
     def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
@@ -72,6 +85,9 @@ class SpringSocialConnectController {
       connectionRepository.removeConnections(providerId)
     }
 
+    def cfg = SpringSocialUtils.config.get(providerId)
+
+    //TODO: Document this parameter
     def postDisconnectUri = params.ss_post_disconnect_uri ?: cfg.postDisconnectUri
     if (log.isInfoEnabled()) {
       log.info("redirecting to ${postDisconnectUri}")
