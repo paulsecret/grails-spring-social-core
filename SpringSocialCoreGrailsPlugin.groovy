@@ -21,7 +21,7 @@ class SpringSocialCoreGrailsPlugin {
   // the version or versions of Grails the plugin is designed for
   def grailsVersion = "1.3.0 > *"
   // the other plugins this plugin depends on
-  def dependsOn = [springSecurityCore: '1.2 > *']
+  def dependsOn = [springSecurityCore:'1.2.1']
   def loadAfter = ['springSecurityCore']
   // resources that are excluded from plugin packaging
   def pluginExcludes = [

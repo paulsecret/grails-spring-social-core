@@ -37,7 +37,7 @@ grails.project.dependency.resolution = {
   }
   plugins {
     ///compile "org.grails.plugins:plugin-config:0.1.4"
-    compile "org.grails.plugins:spring-security-core:1.2"
+    compile "org.grails.plugins:spring-security-core:1.2.1"
   }
   dependencies {
     def springSocialVersion = "1.0.0.RELEASE"
