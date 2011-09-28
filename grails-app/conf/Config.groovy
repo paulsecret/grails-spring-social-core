@@ -38,3 +38,9 @@ log4j = {
 
     warn   'org.mortbay.log'
 }
+
+
+grails.doc.authors = "Domingo Suarez Torres"
+grails.doc.license = "Apache 2"
+grails.doc.copyright = "Copyright SynergyJ 2011"
+grails.doc.footer = "Spriung Social Core"
