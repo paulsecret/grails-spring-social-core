@@ -30,7 +30,6 @@ class SpringSocialCoreGrailsPlugin {
       "grails-app/i18n/**"
   ]
 
-  // TODO Fill in these fields
   def author = "Domingo Suarez Torres"
   def authorEmail = "domingo.suarez@gmail.com"
   def title = "Spring Social Core"
