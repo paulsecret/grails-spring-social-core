@@ -1,0 +1,10 @@
+The Spring Social Core plugin simplifies the integration of  [Spring Social|http://www.springsource.org/spring-social] into Grails applications. The plugin provides sensible defaults with many configuration options for customization. Nearly everything is configurable or replaceable in the plugin and in Spring Social itself, which makes extensive use of interfaces.
+
+This plugin integrates all the foundation classes and dependencies to be used with other Spring Social providers, like Twitter of Facebook.
+
+This guide documents configuration defaults and describes how to configure and extend the Spring Social plugin for Grails applications.
+
+h4. Release History
+
+* August 27, 2011
+** initial 0.1 release
