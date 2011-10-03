@@ -14,109 +14,86 @@
  */
 package grails.plugins.springsocial
 
-import javax.inject.Inject
-import javax.inject.Provider
+import grails.plugins.springsocial.connect.web.GrailsConnectSupport
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
 import org.springframework.social.connect.ConnectionFactoryLocator
 import org.springframework.social.connect.ConnectionRepository
 import org.springframework.social.connect.DuplicateConnectionException
-import org.springframework.social.connect.UsersConnectionRepository
-import org.springframework.social.connect.support.OAuth1ConnectionFactory
-import org.springframework.social.connect.support.OAuth2ConnectionFactory
 import org.springframework.social.connect.web.ProviderSignInAttempt
 import org.springframework.social.oauth1.AuthorizedRequestToken
-import org.springframework.social.oauth1.OAuth1Parameters
-import org.springframework.social.oauth1.OAuth1Version
 import org.springframework.social.oauth1.OAuthToken
-import org.springframework.social.oauth2.GrantType
-import org.springframework.social.oauth2.OAuth2Parameters
 
 class SpringSocialProviderSignInController {
-    @Inject
-    Provider<ConnectionFactoryLocator> connectionFactoryLocatorProvider
+  def connectionFactoryLocator
+  def connectionRepository
+  def signInService
+  def webSupport = new GrailsConnectSupport(home: g.createLink(uri: "/", absolute: true))
 
-    UsersConnectionRepository usersConnectionRepository
-    @Inject
-    Provider<ConnectionRepository> connectionRepositoryProvider
-    def signInService
+  def signIn = {
+    def providerId = params.providerId
+    def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
+    def nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
+    def url = webSupport.buildOAuthUrl(connectionFactory, nativeWebRequest)
+    redirect url: url
+  }
 
-    def withProvider = {
-        def providerId = params.providerId
-        def connectionFactory = getConnectionFactoryLocator().getConnectionFactory(providerId)
-        if (connectionFactory instanceof OAuth1ConnectionFactory) {
-            if (params.ss_oauth_return_url) {
-                session.ss_oauth_return_url = params.ss_oauth_return_url
-            }
-            def oauth1Ops = connectionFactory.getOAuthOperations()
-            def requestToken = oauth1Ops.fetchRequestToken(callbackUrl(providerId), null)
-            session.oauthToken = requestToken
-            String authenticateUrl = oauth1Ops.buildAuthenticateUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId)) : OAuth1Parameters.NONE)
-            redirect url: authenticateUrl
-        } else if (connectionFactory instanceof OAuth2ConnectionFactory) {
-            def oauth2Ops = connectionFactory.getOAuthOperations()
-            String authenticateUrl = oauth2Ops.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId), request.getParameter("scope")))
-            redirect url: authenticateUrl
-        } else {
-            render "return handleSignInWithConnectionFactory(connectionFactory, request)"
-        }
+  def oauthCallback = {
+    def providerId = params.providerId
+    def oauth_token = params.oauth_token
+    def code = params.code
+    def pam = oauth_token ?: code
+
+    if (oauth_token) {
+      def verifier = params.oauth_verifier
+
+      def connectionFactory = getConnectionFactoryLocator().getConnectionFactory(providerId)
+      def accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(session), verifier), null)
+      def connection = connectionFactory.createConnection(accessToken)
+      //return handleSignIn(connection, request);
+      redirect(url: handleSignIn(connection, session))
+    } else if (code) {
+      render "providerId: ${providerId}, pam: ${pam}"
     }
+  }
 
-    def oauthCallback = {
-        def providerId = params.providerId
-        def oauth_token = params.oauth_token
-        def code = params.code
-        def pam = oauth_token ?: code
+  private ConnectionFactoryLocator getConnectionFactoryLocator() {
+    return connectionFactoryLocatorProvider.get();
+  }
 
-        if (oauth_token) {
-            def verifier = params.oauth_verifier
+  String callbackUrl(provider) {
+    g.createLink(mapping: 'springSocialSignIn', params: [providerId: provider], absolute: true)
+  }
 
-            def connectionFactory = getConnectionFactoryLocator().getConnectionFactory(providerId)
-            def accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(session), verifier), null)
-            def connection = connectionFactory.createConnection(accessToken)
-            //return handleSignIn(connection, request);
-            redirect(url: handleSignIn(connection, session))
-        } else if (code) {
-            render "providerId: ${providerId}, pam: ${pam}"
-        }
+
+  private OAuthToken extractCachedRequestToken(session) {
+    def requestToken = session.oauthToken
+    session.removeAttribute('oauthToken')
+    requestToken
+  }
+
+  private void addConnection(session, connectionFactory, connection) {
+    try {
+      getConnectionRepository().addConnection(connection)
+      //postConnect(connectionFactory, connection, request)
+    } catch (DuplicateConnectionException e) {
+      session.addAttribute(DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE, e)
     }
+  }
 
-    private ConnectionFactoryLocator getConnectionFactoryLocator() {
-        return connectionFactoryLocatorProvider.get();
+  private ConnectionRepository getConnectionRepository() {
+    connectionRepositoryProvider.get()
+  }
+
+  private String handleSignIn(connection, session) {
+    String localUserId = usersConnectionRepository.findUserIdWithConnection(connection)
+    if (localUserId == null) {
+      def signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocatorProvider, connectionRepositoryProvider);
+      session.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt)
+    } else {
+      signInService.signIn(localUserId)
     }
-
-    String callbackUrl(provider) {
-        g.createLink(mapping: 'springSocialSignIn', params: [providerId: provider], absolute: true)
-    }
-
-
-    private OAuthToken extractCachedRequestToken(session) {
-        def requestToken = session.oauthToken
-        session.removeAttribute('oauthToken')
-        requestToken
-    }
-
-    private void addConnection(session, connectionFactory, connection) {
-        try {
-            getConnectionRepository().addConnection(connection)
-            //postConnect(connectionFactory, connection, request)
-        } catch (DuplicateConnectionException e) {
-            session.addAttribute(DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE, e)
-        }
-    }
-
-    private ConnectionRepository getConnectionRepository() {
-        connectionRepositoryProvider.get()
-    }
-
-    private String handleSignIn(connection, session) {
-        String localUserId = usersConnectionRepository.findUserIdWithConnection(connection)
-        if (localUserId == null) {
-            def signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocatorProvider, connectionRepositoryProvider);
-            session.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt)
-        } else {
-            signInService.signIn(localUserId)
-        }
-        session.ss_last_user_profile = connection.fetchUserProfile()
-        def postSignInUri = session.ss_oauth_return_url ?: g.createLink(uri: SpringSocialUtils.config.postSignInUri, absolute: true)
-        postSignInUri
-    }
+    session.ss_last_user_profile = connection.fetchUserProfile()
+    def postSignInUri = session.ss_oauth_return_url ?: g.createLink(uri: SpringSocialUtils.config.postSignInUri, absolute: true)
+    postSignInUri
+  }
 }
