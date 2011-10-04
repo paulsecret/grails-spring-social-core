@@ -31,33 +31,33 @@ import org.springframework.social.connect.support.ConnectionFactoryRegistry
 
 @Configuration
 class SpringSocialCoreConfig {
-    @Inject
-    DataSource dataSource
+  @Inject
+  DataSource dataSource
 
-    @Bean
-    public TextEncryptor textEncryptor() {
-        Encryptors.noOpText()
-    }
+  @Bean
+  public TextEncryptor textEncryptor() {
+    Encryptors.noOpText()
+  }
 
-    @Bean
-    @Scope(value = "singleton")
-    public ConnectionFactoryLocator connectionFactoryLocator() {
-        new ConnectionFactoryRegistry()
-    }
+  @Bean
+  @Scope(value = "singleton")
+  public ConnectionFactoryLocator connectionFactoryLocator() {
+    new ConnectionFactoryRegistry()
+  }
 
-    @Bean
-    @Scope(value = "singleton", proxyMode = ScopedProxyMode.INTERFACES)
-    UsersConnectionRepository usersConnectionRepository() {
-        new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator(), Encryptors.noOpText())
-    }
+  @Bean
+  @Scope(value = "singleton", proxyMode = ScopedProxyMode.INTERFACES)
+  UsersConnectionRepository usersConnectionRepository() {
+    new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator(), textEncryptor())
+  }
 
-    @Bean
-    @Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
-    ConnectionRepository connectionRepository() {
-        def authentication = SecurityContextHolder.getContext().getAuthentication()
-        if (!authentication) {
-            throw new IllegalStateException("Unable to get a ConnectionRepository: no user signed in")
-        }
-        usersConnectionRepository().createConnectionRepository(authentication.getName())
+  @Bean
+  @Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
+  ConnectionRepository connectionRepository() {
+    def authentication = SecurityContextHolder.getContext().getAuthentication()
+    if (!authentication) {
+      throw new IllegalStateException("Unable to get a ConnectionRepository: no user signed in")
     }
+    usersConnectionRepository().createConnectionRepository(authentication.getName())
+  }
 }
