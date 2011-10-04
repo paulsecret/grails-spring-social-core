@@ -29,8 +29,6 @@ class ConnectionFactoryConfigurer {
       void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {}
 
       void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-        log.info 'postProcessBeanFactory start'
-
         //def appConfig = beanFactory.parentBeanFactory.getBean('grailsApplication').config
 
         def connectionFactories = beanFactory.getBeansOfType(ConnectionFactory)
