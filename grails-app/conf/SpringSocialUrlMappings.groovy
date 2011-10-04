@@ -15,7 +15,7 @@
 class SpringSocialUrlMappings {
 
   static mappings = {
-
+    //TODO: Document this UrlMappings
     name springSocialConnect: "/ssconnect/$providerId/$providerUserId?" {
       controller = 'springSocialConnect'
       action = [GET: "oauthCallback", POST: 'connect', DELETE: "disconnect",]
