@@ -17,37 +17,29 @@ import grails.plugins.springsocial.SpringSecuritySigninService
 
 class SpringSocialCoreGrailsPlugin {
   // the plugin version
-  def version = "0.1.10"
-  // the version or versions of Grails the plugin is designed for
-  def grailsVersion = "1.3.0 > *"
+  String version = "0.1.10"
+  String grailsVersion = "1.3.0 > *"
   Map dependsOn = ['springSecurityCore': '1.2.1 > *']
-  // resources that are excluded from plugin packaging
-  def pluginExcludes = [
+
+  List pluginExcludes = [
       "grails-app/views/error.gsp",
       "grails-app/conf/Config.groovy",
       "grails-app/conf/DataSource.groovy",
       "grails-app/i18n/**"
   ]
 
-  def author = "Domingo Suarez Torres"
-  def authorEmail = "domingo.suarez@gmail.com"
-  def title = "Spring Social Core"
-  def description = '''\\
-Spring Social Core plugin.
-'''
+  String author = "Domingo Suarez Torres"
+  String authorEmail = "domingo.suarez@gmail.com"
+  String title = "Spring Social Core"
+  String description = "Spring Social Core plugin."
 
-  // URL to the plugin's documentation
-  def documentation = "http://grails.org/plugin/spring-social-core"
+  String documentation = "http://grails.org/plugin/spring-social-core"
 
-  def license = "APACHE"
-  def organization = [name: "SynergyJ", url: "http://synergyj.com/"]
-  def developers = [[name: "Domingo Suarez Torres", email: "domingo.suarez@gmail.com"], [name: "Jose Juan Reyes Zuniga", email: "neodevelop@gmail.com"]]
-  def scm = [url: "https://github.com/synergyj/grails-spring-social-core"]
-  def issueManagement = [system: "GITHUB", url: "https://github.com/synergyj/grails-spring-social-core/issues"]
-
-  def doWithWebDescriptor = { xml ->
-    // TODO Implement additions to web.xml (optional), this event occurs before
-  }
+  String license = "APACHE"
+  String organization = [name: "SynergyJ", url: "http://synergyj.com/"]
+  String developers = [[name: "Domingo Suarez Torres", email: "domingo.suarez@gmail.com"], [name: "Jose Juan Reyes Zuniga", email: "neodevelop@gmail.com"]]
+  String scm = [url: "https://github.com/synergyj/grails-spring-social-core"]
+  String issueManagement = [system: "GITHUB", url: "https://github.com/synergyj/grails-spring-social-core/issues"]
 
   def doWithSpring = {
     xmlns context: "http://www.springframework.org/schema/context"
@@ -56,22 +48,4 @@ Spring Social Core plugin.
     signInService(SpringSecuritySigninService)
   }
 
-  def doWithDynamicMethods = { ctx ->
-    // TODO Implement registering dynamic methods to classes (optional)
-  }
-
-  def doWithApplicationContext = { applicationContext ->
-    // TODO Implement post initialization spring config (optional)
-  }
-
-  def onChange = { event ->
-    // TODO Implement code that is executed when any artefact that this plugin is
-    // watching is modified and reloaded. The event contains: event.source,
-    // event.application, event.manager, event.ctx, and event.plugin.
-  }
-
-  def onConfigChange = { event ->
-    // TODO Implement code that is executed when the project configuration changes.
-    // The event is the same as for 'onChange'.
-  }
 }
