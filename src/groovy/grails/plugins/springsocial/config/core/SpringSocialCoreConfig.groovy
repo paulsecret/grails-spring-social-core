@@ -41,7 +41,7 @@ class SpringSocialCoreConfig {
   }
 
   @Bean
-  @Scope(value = "singleton", proxyMode = ScopedProxyMode.INTERFACES)
+  @Scope(value = "singleton")
   ConnectionFactoryLocator connectionFactoryLocator() {
     new ConnectionFactoryRegistry()
   }
