@@ -30,22 +30,28 @@ class ConnectionFactoryConfigurer {
   ConnectionFactoryLocator connectionFactoryLocator
 
   @Bean
-  BeanDefinitionRegistryPostProcessor processConecctionF() {
-    new BeanDefinitionRegistryPostProcessor() {
-      void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {}
+  BeanDefinitionRegistryPostProcessor registerConnectionFactories() {
+    new Processor(connectionFactoryLocator)
+  }
+}
 
-      void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-        //TODO: Document the automatic ConnectionFactory registration
-        def connectionFactories = beanFactory.getBeansOfType(ConnectionFactory)
-        connectionFactories.each {conectionFactory ->
-          if (connectionFactoryLocator) {
-            println "adding to the registry: " + conectionFactory.dump()
-            ((ConnectionFactoryRegistry) connectionFactoryLocator).addConnectionFactory(conectionFactory)
-          }
+class Processor implements BeanDefinitionRegistryPostProcessor {
+  ConnectionFactoryLocator connectionFactoryLocator
 
-        }
+  Processor(ConnectionFactoryLocator connectionFactoryLocator) {
+    this.connectionFactoryLocator = connectionFactoryLocator
+  }
+
+  void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {}
+
+  void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+    //TODO: Document the automatic ConnectionFactory registration
+    def connectionFactories = beanFactory.getBeansOfType(ConnectionFactory)
+    connectionFactories.each {connectionFactory ->
+      if (connectionFactoryLocator) {
+        println "adding to the registry: " + connectionFactory.dump()
+        ((ConnectionFactoryRegistry) connectionFactoryLocator).addConnectionFactory(connectionFactory)
       }
-
     }
   }
 }
