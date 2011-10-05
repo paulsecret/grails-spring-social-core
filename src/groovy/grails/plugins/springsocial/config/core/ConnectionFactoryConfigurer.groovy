@@ -25,7 +25,7 @@ class ConnectionFactoryConfigurer implements BeanFactoryPostProcessor {
   void postProcessBeanFactory(ConfigurableListableBeanFactory configurableListableBeanFactory) {
     ConnectionFactoryLocator connectionFactoryLocator = configurableListableBeanFactory.getBean(ConnectionFactoryLocator)
     //TODO: Document the automatic ConnectionFactory registration
-    def connectionFactories = beanFactory.getBeansOfType(ConnectionFactory)
+    def connectionFactories = configurableListableBeanFactory.getBeansOfType(ConnectionFactory)
     connectionFactories.each {connectionFactoryKey, connectionFactory ->
       if (connectionFactoryLocator) {
         println "adding to the registry: " + connectionFactory
@@ -34,4 +34,3 @@ class ConnectionFactoryConfigurer implements BeanFactoryPostProcessor {
     }
   }
 }
-
