@@ -14,37 +14,23 @@
  */
 package grails.plugins.springsocial.config.core
 
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
-import org.springframework.beans.factory.support.BeanDefinitionRegistry
-import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.social.connect.ConnectionFactory
-import org.springframework.social.connect.ConnectionFactoryLocator
 import org.springframework.social.connect.support.ConnectionFactoryRegistry
 
-@Configuration
-class ConnectionFactoryConfigurer {
+class ConnectionFactoryConfigurer implements BeanFactoryPostProcessor {
 
-  @Bean
-  BeanDefinitionRegistryPostProcessor registerConnectionFactories() {
-    new Processor()
-  }
-}
-
-class Processor implements BeanDefinitionRegistryPostProcessor {
-
-  void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {}
-
-  void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-    ConnectionFactoryLocator connectionFactoryLocator = beanFactory.getBean(ConnectionFactoryLocator)
+  void postProcessBeanFactory(ConfigurableListableBeanFactory configurableListableBeanFactory) {
+    ConnectionFactoryRegistry connectionFactoryLocator = configurableListableBeanFactory.getBean(ConnectionFactoryRegistry)
     //TODO: Document the automatic ConnectionFactory registration
     def connectionFactories = beanFactory.getBeansOfType(ConnectionFactory)
     connectionFactories.each {connectionFactoryKey, connectionFactory ->
       if (connectionFactoryLocator) {
         println "adding to the registry: " + connectionFactory
-        ((ConnectionFactoryRegistry) connectionFactoryLocator).addConnectionFactory(connectionFactory)
+        connectionFactoryLocator.addConnectionFactory(connectionFactory)
       }
     }
   }
 }
+
