@@ -42,7 +42,7 @@ class Processor implements BeanDefinitionRegistryPostProcessor {
     //TODO: Document the automatic ConnectionFactory registration
     def connectionFactories = beanFactory.getBeansOfType(ConnectionFactory)
     println "ConnectionFactories founded: ${connectionFactories}"
-    connectionFactories.each {connectionFactory ->
+    connectionFactories.each {connectionFactoryKey, connectionFactory ->
       if (connectionFactoryLocator) {
         println "adding to the registry: " + connectionFactory
         connectionFactoryLocator.addConnectionFactory(connectionFactory)
