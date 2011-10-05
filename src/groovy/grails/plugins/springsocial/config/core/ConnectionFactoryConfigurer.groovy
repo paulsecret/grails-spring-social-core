@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.social.connect.ConnectionFactory
 import org.springframework.social.connect.ConnectionFactoryLocator
-import org.springframework.social.connect.support.ConnectionFactoryRegistry
 
 @Configuration
 class ConnectionFactoryConfigurer {
@@ -45,8 +44,8 @@ class Processor implements BeanDefinitionRegistryPostProcessor {
     println "ConnectionFactories founded: ${connectionFactories}"
     connectionFactories.each {connectionFactory ->
       if (connectionFactoryLocator) {
-        println "adding to the registry: " + connectionFactory.dump()
-        ((ConnectionFactoryRegistry) connectionFactoryLocator).addConnectionFactory(connectionFactory)
+        println "adding to the registry: " + connectionFactory
+        connectionFactoryLocator.addConnectionFactory(connectionFactory)
       }
     }
   }
