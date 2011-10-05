@@ -18,7 +18,7 @@ import grails.plugins.springsocial.config.core.ConnectionFactoryConfigurer
 
 class SpringSocialCoreGrailsPlugin {
   // the plugin version
-  String version = "0.1.24"
+  String version = "0.1.25"
   String grailsVersion = "1.3.0 > *"
   Map dependsOn = ['springSecurityCore': '1.2.1 > *']
 
