@@ -14,7 +14,6 @@
  */
 package grails.plugins.springsocial.config.core
 
-import javax.inject.Inject
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
@@ -26,27 +25,24 @@ import org.springframework.social.connect.support.ConnectionFactoryRegistry
 
 @Configuration
 class ConnectionFactoryConfigurer {
-  @Inject
-  ConnectionFactoryLocator connectionFactoryLocator
 
   @Bean
   BeanDefinitionRegistryPostProcessor registerConnectionFactories() {
-    new Processor(connectionFactoryLocator)
+    new Processor()
   }
 }
 
 class Processor implements BeanDefinitionRegistryPostProcessor {
-  ConnectionFactoryLocator connectionFactoryLocator
-
-  Processor(ConnectionFactoryLocator connectionFactoryLocator) {
-    this.connectionFactoryLocator = connectionFactoryLocator
-  }
 
   void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {}
 
   void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+    println "Trying to automatic configure ConnectionFactories"
+    def connectionFactoryLocator = beanFactory.getBean(ConnectionFactoryLocator)
+    println "ConnectionFactoryLocator found: ${connectionFactoryLocator}"
     //TODO: Document the automatic ConnectionFactory registration
     def connectionFactories = beanFactory.getBeansOfType(ConnectionFactory)
+    println "ConnectionFactories founded: ${connectionFactories}"
     connectionFactories.each {connectionFactory ->
       if (connectionFactoryLocator) {
         println "adding to the registry: " + connectionFactory.dump()
