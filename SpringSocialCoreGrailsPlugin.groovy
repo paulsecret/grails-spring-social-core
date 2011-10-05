@@ -18,7 +18,7 @@ import grails.plugins.springsocial.config.core.ConnectionFactoryConfigurer
 
 class SpringSocialCoreGrailsPlugin {
   // the plugin version
-  String version = "0.1.20"
+  String version = "0.1.21"
   String grailsVersion = "1.3.0 > *"
   Map dependsOn = ['springSecurityCore': '1.2.1 > *']
 
@@ -47,8 +47,6 @@ class SpringSocialCoreGrailsPlugin {
     context.'component-scan'('base-package': "grails.plugins.springsocial.config.core")
 
     signInService(SpringSecuritySigninService)
-    addBeanFactoryPostProcessor(ConnectionFactoryConfigurer)
-
   }
 
 }

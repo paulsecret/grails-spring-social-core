@@ -61,4 +61,5 @@ class SpringSocialCoreConfig {
     }
     usersConnectionRepository().createConnectionRepository(authentication.getName())
   }
+
 }
