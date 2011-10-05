@@ -17,7 +17,7 @@ import grails.plugins.springsocial.SpringSecuritySigninService
 
 class SpringSocialCoreGrailsPlugin {
   // the plugin version
-  String version = "0.1.16"
+  String version = "0.1.17"
   String grailsVersion = "1.3.0 > *"
   Map dependsOn = ['springSecurityCore': '1.2.1 > *']
 

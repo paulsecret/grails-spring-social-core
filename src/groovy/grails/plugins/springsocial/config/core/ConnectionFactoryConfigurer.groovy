@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.social.connect.ConnectionFactory
 import org.springframework.social.connect.ConnectionFactoryLocator
+import org.springframework.social.connect.support.ConnectionFactoryRegistry
 
 @Configuration
 class ConnectionFactoryConfigurer {
@@ -36,16 +37,13 @@ class Processor implements BeanDefinitionRegistryPostProcessor {
   void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {}
 
   void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-    println "Trying to automatic configure ConnectionFactories"
-    def connectionFactoryLocator = beanFactory.getBean(ConnectionFactoryLocator)
-    println "ConnectionFactoryLocator found: ${connectionFactoryLocator}"
+    ConnectionFactoryLocator connectionFactoryLocator = beanFactory.getBean(ConnectionFactoryLocator)
     //TODO: Document the automatic ConnectionFactory registration
     def connectionFactories = beanFactory.getBeansOfType(ConnectionFactory)
-    println "ConnectionFactories founded: ${connectionFactories}"
     connectionFactories.each {connectionFactoryKey, connectionFactory ->
       if (connectionFactoryLocator) {
         println "adding to the registry: " + connectionFactory
-        connectionFactoryLocator.addConnectionFactory(connectionFactory)
+        ((ConnectionFactoryRegistry) connectionFactoryLocator).addConnectionFactory(connectionFactory)
       }
     }
   }
