@@ -14,32 +14,5 @@
  */
 package grails.plugins.springsocial.config.core
 
-import javax.annotation.PostConstruct
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.ApplicationContext
-import org.springframework.social.connect.ConnectionFactory
-import org.springframework.social.connect.ConnectionFactoryLocator
-import org.springframework.social.connect.support.ConnectionFactoryRegistry
-import org.springframework.stereotype.Component
-
-@Component
 class ConnectionFactoryConfigurer {
-  @Autowired
-  ConnectionFactoryLocator connectionFactoryLocator
-  @Autowired
-  ApplicationContext appCtx
-
-  @PostConstruct
-  void postProcessBeanFactory() {
-    println "Trying to automatic configure the ConnectionFactories"
-    //TODO: Document the automatic ConnectionFactory registration
-    def connectionFactories = appCtx.getBeansOfType(ConnectionFactory)
-    println "ConnectionFactories found: ${connectionFactories}"
-    connectionFactories.each {connectionFactoryKey, connectionFactory ->
-      if (connectionFactoryLocator) {
-        println "adding to the registry: " + connectionFactory
-        ((ConnectionFactoryRegistry) connectionFactoryLocator).addConnectionFactory(connectionFactory)
-      }
-    }
-  }
 }
