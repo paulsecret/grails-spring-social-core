@@ -31,15 +31,10 @@ class ConnectionFactoryConfigurer {
 
   @PostConstruct
   void postProcessBeanFactory() {
-    println "Trying to automatic configure the ConnectionFactories"
     //TODO: Document the automatic ConnectionFactory registration
     def connectionFactories = appCtx.getBeansOfType(ConnectionFactory)
-    println "ConnectionFactories found: ${connectionFactories}"
     connectionFactories.each {connectionFactoryKey, connectionFactory ->
-      if (connectionFactoryLocator) {
-        println "adding to the registry: " + connectionFactory
-        ((ConnectionFactoryRegistry) connectionFactoryLocator).addConnectionFactory(connectionFactory)
-      }
+      ((ConnectionFactoryRegistry) connectionFactoryLocator).addConnectionFactory(connectionFactory)
     }
   }
 }
