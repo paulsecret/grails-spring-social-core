@@ -15,6 +15,7 @@
 package grails.plugins.springsocial
 
 import grails.plugins.springsocial.connect.web.GrailsConnectSupport
+import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
 import org.springframework.social.connect.ConnectionKey
 import org.springframework.social.connect.DuplicateConnectionException
@@ -33,11 +34,17 @@ class SpringSocialConnectController {
   static allowedMethods = [connect: 'POST', oauthCallback: 'GET', disconnect: 'DELETE']
 
   def connect = {
-    def providerId = params.providerId
-    def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
-    def nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
-    def url = webSupport.buildOAuthUrl(connectionFactory, nativeWebRequest)
-    redirect url: url
+    String result
+    if (isLoggedIn()) {
+      def providerId = params.providerId
+      def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
+      def nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
+      result = webSupport.buildOAuthUrl(connectionFactory, nativeWebRequest)
+      redirect url: result
+    } else {
+      result = SpringSecurityUtils.securityConfig.auth.loginFormUrl
+      redirect uri: result
+    }
   }
 
   def oauthCallback = {
