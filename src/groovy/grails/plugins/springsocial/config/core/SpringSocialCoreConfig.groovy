@@ -14,14 +14,13 @@
  */
 package grails.plugins.springsocial.config.core
 
-import org.springframework.security.core.context.SecurityContextHolder
-
 import javax.inject.Inject
 import javax.sql.DataSource
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
 import org.springframework.context.annotation.ScopedProxyMode
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.encrypt.Encryptors
 import org.springframework.security.crypto.encrypt.TextEncryptor
 import org.springframework.social.connect.ConnectionFactoryLocator

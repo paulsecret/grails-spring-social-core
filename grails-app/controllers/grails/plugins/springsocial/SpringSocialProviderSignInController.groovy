@@ -22,11 +22,18 @@ import org.springframework.social.connect.DuplicateConnectionException
 import org.springframework.social.connect.web.ProviderSignInAttempt
 import org.springframework.social.oauth1.AuthorizedRequestToken
 import org.springframework.social.oauth1.OAuthToken
+import org.springframework.social.connect.Connection
+import org.springframework.web.context.request.RequestAttributes
+import org.springframework.social.support.URIBuilder
+import org.springframework.web.context.request.NativeWebRequest
+import grails.plugins.springsocial.signin.SpringSocialSimpleSignInAdapter
 
 class SpringSocialProviderSignInController {
   def connectionFactoryLocator
   def connectionRepository
   def signInService
+  def usersConnectionRepository
+  def requestCache
   def webSupport = new GrailsConnectSupport(home: g.createLink(uri: "/", absolute: true))
 
   def signIn = {
@@ -43,21 +50,16 @@ class SpringSocialProviderSignInController {
     def code = params.code
     def pam = oauth_token ?: code
 
-    if (oauth_token) {
-      def verifier = params.oauth_verifier
+    def nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
+    def config = SpringSocialUtils.config.get(providerId)
 
-      def connectionFactory = getConnectionFactoryLocator().getConnectionFactory(providerId)
-      def accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(session), verifier), null)
-      def connection = connectionFactory.createConnection(accessToken)
-      //return handleSignIn(connection, request);
-      redirect(url: handleSignIn(connection, session))
+    if (oauth_token) {
+      def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
+      def connection = webSupport.completeConnection(connectionFactory, nativeWebRequest);
+      return handleSignIn(connection, nativeWebRequest, session, config);
     } else if (code) {
       render "providerId: ${providerId}, pam: ${pam}"
     }
-  }
-
-  private ConnectionFactoryLocator getConnectionFactoryLocator() {
-    return connectionFactoryLocatorProvider.get();
   }
 
   String callbackUrl(provider) {
@@ -80,20 +82,25 @@ class SpringSocialProviderSignInController {
     }
   }
 
-  private ConnectionRepository getConnectionRepository() {
-    connectionRepositoryProvider.get()
-  }
-
-  private String handleSignIn(connection, session) {
-    String localUserId = usersConnectionRepository.findUserIdWithConnection(connection)
-    if (localUserId == null) {
-      def signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocatorProvider, connectionRepositoryProvider);
-      session.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt)
-    } else {
-      signInService.signIn(localUserId)
-    }
-    session.ss_last_user_profile = connection.fetchUserProfile()
-    def postSignInUri = session.ss_oauth_return_url ?: g.createLink(uri: SpringSocialUtils.config.postSignInUri, absolute: true)
-    postSignInUri
-  }
+  private String handleSignIn(Connection connection, NativeWebRequest request, session, config) {
+    String result
+		List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
+		if (userIds.size() == 0) {
+			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, usersConnectionRepository);
+			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, RequestAttributes.SCOPE_SESSION)
+      //TODO: Document this setting
+      result = session.ss_oauth_redirect_on_signIn_attempt ?: config.page.handleSignIn
+		} else if (userIds.size() == 1){
+			usersConnectionRepository.createConnectionRepository(userIds.get(0)).updateConnection(connection)
+      def signInAdapter = new SpringSocialSimpleSignInAdapter(requestCache)
+			def originalUrl = signInAdapter.signIn(userIds.get(0), connection, request)
+      println "originalUrl: ${originalUrl}"
+      //TODO: Document this setting
+			result = originalUrl ?: config.postSignInUrl
+		} else {
+      //TODO: handle redirect when multiple users found
+			//result = redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "multiple_users").build().toString());
+		}
+    result
+	}
 }
