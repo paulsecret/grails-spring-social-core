@@ -27,63 +27,72 @@ import org.springframework.social.oauth2.AccessGrant
 import org.springframework.social.oauth2.GrantType
 import org.springframework.social.oauth2.OAuth2Operations
 import org.springframework.social.oauth2.OAuth2Parameters
+import org.springframework.util.MultiValueMap
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.context.request.RequestAttributes
 
 class GrailsConnectSupport extends ConnectSupport {
-    private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
-    String home
-    Boolean useAuthenticateUrl
+  private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
+  String home
+  Boolean useAuthenticateUrl
 
-    public String buildOAuthUrl(ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
-        if (connectionFactory instanceof OAuth1ConnectionFactory) {
-            return buildOAuth1Url((OAuth1ConnectionFactory<?>) connectionFactory, request)
-        } else if (connectionFactory instanceof OAuth2ConnectionFactory) {
-            return buildOAuth2Url((OAuth2ConnectionFactory<?>) connectionFactory, request)
-        } else {
-            throw new IllegalArgumentException("ConnectionFactory not supported")
-        }
+  public String buildOAuthUrl(ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
+    if (connectionFactory instanceof OAuth1ConnectionFactory) {
+      return buildOAuth1Url((OAuth1ConnectionFactory<?>) connectionFactory, request, additionalParameters)
+    } else if (connectionFactory instanceof OAuth2ConnectionFactory) {
+      return buildOAuth2Url((OAuth2ConnectionFactory<?>) connectionFactory, request, additionalParameters)
+    } else {
+      throw new IllegalArgumentException("ConnectionFactory not supported")
     }
+  }
 
-    public Connection<?> completeConnection(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
-        String code = request.getParameter("code")
-        def providerId = connectionFactory.getProviderId()
-        def curl = callbackUrl(request, providerId)
-        AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, curl, null)
-        return connectionFactory.createConnection(accessGrant)
+  public Connection<?> completeConnection(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
+    String code = request.getParameter("code")
+    def providerId = connectionFactory.getProviderId()
+    def curl = callbackUrl(request, providerId)
+    AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, curl, null)
+    return connectionFactory.createConnection(accessGrant)
+  }
+
+  private String callbackUrl(NativeWebRequest request, String providerId) {
+    "${home}ssconnect/${providerId}".toString()
+  }
+
+  private String buildOAuth1Url(OAuth1ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
+    OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
+    OAuth1Parameters parameters = new OAuth1Parameters(additionalParameters);
+    if (oauthOperations.getVersion() == OAuth1Version.CORE_10) {
+      parameters.setCallbackUrl(callbackUrl(request, connectionFactory.providerId));
     }
+    OAuthToken requestToken = fetchRequestToken(request, oauthOperations, connectionFactory.providerId);
+    request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, RequestAttributes.SCOPE_SESSION);
+    return buildOAuth1Url(oauthOperations, requestToken.getValue(), parameters);
+  }
 
-
-    private String buildOAuth1Url(OAuth1ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
-        OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations()
-        OAuthToken requestToken
-        String authorizeUrl
-        def providerId = connectionFactory.getProviderId()
-        if (oauthOperations.getVersion() == OAuth1Version.CORE_10_REVISION_A) {
-            requestToken = oauthOperations.fetchRequestToken(callbackUrl(request, providerId), null)
-            authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), OAuth1Parameters.NONE)
-        } else {
-            requestToken = oauthOperations.fetchRequestToken(null, null)
-            authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), new OAuth1Parameters(callbackUrl(request, providerId)))
-        }
-        request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, RequestAttributes.SCOPE_SESSION)
-        return authorizeUrl
+  private OAuthToken fetchRequestToken(NativeWebRequest request, OAuth1Operations oauthOperations, String providerId) {
+    if (oauthOperations.getVersion() == OAuth1Version.CORE_10_REVISION_A) {
+      return oauthOperations.fetchRequestToken(callbackUrl(request, providerId), null);
     }
+    return oauthOperations.fetchRequestToken(null, null);
+  }
 
-    private String buildOAuth2Url(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
-        OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-        def providerId = connectionFactory.getProviderId()
-        def curl = callbackUrl(request, providerId)
-        OAuth2Parameters parameters = new OAuth2Parameters(curl, request.getParameter("scope"));
-        if (useAuthenticateUrl) {
-            return oauthOperations.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);
-        } else {
-            return oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, parameters);
-        }
+  private String buildOAuth2Url(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
+    OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
+    OAuth2Parameters parameters = getOAuth2Parameters(request, additionalParameters, connectionFactory.providerId);
+    if (useAuthenticateUrl) {
+      return oauthOperations.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);
+    } else {
+      return oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, parameters);
     }
+  }
 
-    private String callbackUrl(NativeWebRequest request, String providerId) {
-        "${home}ssconnect/${providerId}".toString()
+  private OAuth2Parameters getOAuth2Parameters(NativeWebRequest request, MultiValueMap<String, String> additionalParameters, String providerId) {
+    OAuth2Parameters parameters = new OAuth2Parameters(additionalParameters);
+    parameters.setRedirectUri(callbackUrl(request, providerId));
+    String scope = request.getParameter("scope");
+    if (scope != null) {
+      parameters.setScope(scope);
     }
-
+    return parameters;
+  }
 }

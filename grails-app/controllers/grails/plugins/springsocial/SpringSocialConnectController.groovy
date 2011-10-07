@@ -20,6 +20,8 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
 import org.springframework.social.connect.ConnectionKey
 import org.springframework.social.connect.DuplicateConnectionException
 import org.springframework.web.context.request.RequestAttributes
+import org.springframework.util.MultiValueMap
+import org.springframework.util.LinkedMultiValueMap
 
 class SpringSocialConnectController {
 
@@ -38,11 +40,15 @@ class SpringSocialConnectController {
     if (isLoggedIn()) {
       def providerId = params.providerId
       def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
+      MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+      //TODO: Handle preconnect filters
+      //preConnect(connectionFactory, parameters, request);
       def nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
-      result = webSupport.buildOAuthUrl(connectionFactory, nativeWebRequest)
+      result = webSupport.buildOAuthUrl(connectionFactory, nativeWebRequest, parameters)
       redirect url: result
     } else {
-      result = SpringSecurityUtils.securityConfig.auth.loginFormUrl
+      //TODO: Document this parameters
+      result = session.ss_auth_loginFromUrl ?: SpringSecurityUtils.securityConfig.auth.loginFormUrl
       redirect uri: result
     }
   }
@@ -105,6 +111,7 @@ class SpringSocialConnectController {
   private void addConnection(connection, connectionFactory, request) {
     try {
       connectionRepository.addConnection(connection)
+      //TODO: handle post connections interceptors
       //postConnect(connectionFactory, connection, request)
     } catch (DuplicateConnectionException e) {
       request.setAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);

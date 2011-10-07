@@ -19,7 +19,6 @@ import javax.sql.DataSource
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
-import org.springframework.context.annotation.ScopedProxyMode
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.encrypt.Encryptors
 import org.springframework.security.crypto.encrypt.TextEncryptor
@@ -40,19 +39,17 @@ class SpringSocialCoreConfig {
   }
 
   @Bean
-  @Scope(value = "singleton")
   ConnectionFactoryLocator connectionFactoryLocator() {
     new ConnectionFactoryRegistry()
   }
 
   @Bean
-  @Scope(value = "singleton", proxyMode = ScopedProxyMode.INTERFACES)
   UsersConnectionRepository usersConnectionRepository() {
     new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator(), textEncryptor())
   }
 
   @Bean
-  @Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
+  @Scope(value = "request")
   ConnectionRepository connectionRepository() {
     def authentication = SecurityContextHolder.getContext().getAuthentication()
     if (!authentication) {
