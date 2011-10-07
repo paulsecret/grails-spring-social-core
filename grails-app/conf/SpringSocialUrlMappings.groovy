@@ -18,11 +18,11 @@ class SpringSocialUrlMappings {
     //TODO: Document this UrlMappings
     name springSocialConnect: "/ssconnect/$providerId/$providerUserId?" {
       controller = 'springSocialConnect'
-      action = [GET: "oauthCallback", POST: 'connect', DELETE: "disconnect",]
+      action = [GET: "oauthCallback", POST: 'connect', DELETE: "disconnect"]
     }
-    name springSocialSignIn: "/sssignin/$providerId" {
+    name springSocialSignIn: "/sssignin/$providerId/$providerUserId?" {
       controller = 'springSocialProviderSignIn'
-      action = [GET: "oauthCallback", POST: 'withProvider', DELETE: "disconnect",]
+      action = [GET: "oauthCallback", POST: 'signin']
     }
   }
 }

@@ -30,7 +30,7 @@ class SpringSocialProviderSignInController {
   def requestCache
   def webSupport = new GrailsConnectSupport(home: g.createLink(uri: "/", absolute: true))
 
-  def signIn = {
+  def signin = {
     def providerId = params.providerId
     def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
     def nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
