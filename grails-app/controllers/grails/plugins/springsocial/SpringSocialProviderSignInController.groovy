@@ -28,7 +28,7 @@ class SpringSocialProviderSignInController {
   def signInService
   def usersConnectionRepository
   def requestCache
-  def webSupport = new GrailsConnectSupport(home: g.createLink(uri: "/", absolute: true))
+  def webSupport = new GrailsConnectSupport(mapping: "springSocialSignIn")
 
   def signin = {
     def providerId = params.providerId
@@ -46,7 +46,8 @@ class SpringSocialProviderSignInController {
 
     def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
     def connection = webSupport.completeConnection(connectionFactory, nativeWebRequest);
-    return handleSignIn(connection, nativeWebRequest, session, config);
+    def url = handleSignIn(connection, nativeWebRequest, session, config);
+    redirect url: url
   }
 
   private String handleSignIn(Connection connection, NativeWebRequest request, session, config) {

@@ -31,7 +31,7 @@ class SpringSocialConnectController {
   def connectionFactoryLocator
   def connectionRepository
 
-  def webSupport = new GrailsConnectSupport(home: g.createLink(uri: "/", absolute: true))
+  def webSupport = new GrailsConnectSupport(mapping: "springSocialConnect")
 
   static allowedMethods = [connect: 'POST', oauthCallback: 'GET', disconnect: 'DELETE']
 
