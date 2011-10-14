@@ -46,7 +46,8 @@ class SpringSocialProviderSignInController {
 
     def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
     def connection = webSupport.completeConnection(connectionFactory, nativeWebRequest);
-    return handleSignIn(connection, nativeWebRequest, session, config);
+    def url = handleSignIn(connection, nativeWebRequest, session, config);
+    redirect url: url
   }
 
   private String handleSignIn(Connection connection, NativeWebRequest request, session, config) {
