@@ -28,7 +28,7 @@ class SpringSocialProviderSignInController {
   def signInService
   def usersConnectionRepository
   def requestCache
-  def webSupport = new GrailsConnectSupport(home: g.createLink(uri: "/", absolute: true))
+  def webSupport = new GrailsConnectSupport(mapping: "springSocialSignIn")
 
   def signin = {
     def providerId = params.providerId

@@ -30,10 +30,11 @@ import org.springframework.social.oauth2.OAuth2Parameters
 import org.springframework.util.MultiValueMap
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.context.request.RequestAttributes
+import org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib
 
 class GrailsConnectSupport extends ConnectSupport {
   private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
-  String home
+  String mapping
   Boolean useAuthenticateUrl
 
   public String buildOAuthUrl(ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
@@ -55,7 +56,7 @@ class GrailsConnectSupport extends ConnectSupport {
   }
 
   private String callbackUrl(NativeWebRequest request, String providerId) {
-    "${home}ssconnect/${providerId}".toString()
+    return new ApplicationTagLib().createLink(mapping: mapping, absolute: true, params: [providerId: providerId])
   }
 
   private String buildOAuth1Url(OAuth1ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
