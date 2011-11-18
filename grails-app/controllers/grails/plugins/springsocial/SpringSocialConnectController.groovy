@@ -75,9 +75,10 @@ class SpringSocialConnectController {
     def uri = uriRedirect ?: config.page.connectedHome
 
     def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
-    def connection = webSupport.completeConnection(connectionFactory, new GrailsWebRequest(request, response, servletContext))
+    def nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
+    def connection = webSupport.completeConnection(connectionFactory, nativeWebRequest)
 
-    addConnection(connection, connectionFactory, request)
+    addConnection(connection, connectionFactory, nativeWebRequest)
     redirect(uri: uri)
   }
 
@@ -114,7 +115,7 @@ class SpringSocialConnectController {
       //TODO: handle post connections interceptors
       //postConnect(connectionFactory, connection, request)
     } catch (DuplicateConnectionException e) {
-      request.setAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
+      request.setAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION)
     }
   }
 }

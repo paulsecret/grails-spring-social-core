@@ -29,6 +29,7 @@ class SpringSocialProviderSignInController {
   def usersConnectionRepository
   def requestCache
   def webSupport = new GrailsConnectSupport(mapping: "springSocialSignIn")
+  static allowedMethods = [signin: 'POST', oauthCallback: 'GET', disconnect: 'DELETE']
 
   def signin = {
     def providerId = params.providerId
@@ -46,11 +47,11 @@ class SpringSocialProviderSignInController {
 
     def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
     def connection = webSupport.completeConnection(connectionFactory, nativeWebRequest);
-    def url = handleSignIn(connection, nativeWebRequest, session, config);
+    def url = handleSignIn(connection, nativeWebRequest, config);
     redirect url: url
   }
 
-  private String handleSignIn(Connection connection, NativeWebRequest request, session, config) {
+  private String handleSignIn(Connection connection, GrailsWebRequest request, config) {
     String result
     List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
     if (userIds.size() == 0) {
@@ -58,7 +59,7 @@ class SpringSocialProviderSignInController {
       ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, usersConnectionRepository);
       request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, RequestAttributes.SCOPE_SESSION)
       //TODO: Document this setting
-      result = session.ss_oauth_redirect_on_signIn_attempt ?: config.page.handleSignIn
+      result = request.session.ss_oauth_redirect_on_signIn_attempt ?: config.page.handleSignIn
     } else if (userIds.size() == 1) {
       println "User found in the repository..."
       usersConnectionRepository.createConnectionRepository(userIds.get(0)).updateConnection(connection)
