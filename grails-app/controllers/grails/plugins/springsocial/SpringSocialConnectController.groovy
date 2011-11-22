@@ -19,9 +19,10 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
 import org.springframework.social.connect.ConnectionKey
 import org.springframework.social.connect.DuplicateConnectionException
-import org.springframework.web.context.request.RequestAttributes
-import org.springframework.util.MultiValueMap
+import org.springframework.util.Assert
 import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
+import org.springframework.web.context.request.RequestAttributes
 
 class SpringSocialConnectController {
 
@@ -39,6 +40,9 @@ class SpringSocialConnectController {
     String result
     if (isLoggedIn()) {
       def providerId = params.providerId
+
+      Assert.hasText(providerId, "The providerId is required")
+
       def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
       MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
       //TODO: Handle preconnect filters
@@ -47,6 +51,9 @@ class SpringSocialConnectController {
       result = webSupport.buildOAuthUrl(connectionFactory, nativeWebRequest, parameters)
       redirect url: result
     } else {
+      if (log.isWarnEnabled()) {
+        log.warn("The connect feature only is available for Signed Users. New users perhaps can use SignIn feature.")
+      }
       //TODO: Document this parameters
       result = session.ss_auth_loginFromUrl ?: SpringSecurityUtils.securityConfig.auth.loginFormUrl
       redirect uri: result
@@ -55,6 +62,9 @@ class SpringSocialConnectController {
 
   def oauthCallback = {
     def providerId = params.providerId
+
+    Assert.hasText(providerId, "The providerId is required")
+
     def config = SpringSocialUtils.config.get(providerId)
     def denied = params.denied
 
@@ -85,7 +95,7 @@ class SpringSocialConnectController {
   def disconnect = {
     def providerId = params.providerId
     def providerUserId = params.providerUserId
-    assert providerId, "The providerId is required"
+    Assert.hasText(providerId, "The providerId is required")
 
     if (providerUserId) {
       if (log.isInfoEnabled()) {
