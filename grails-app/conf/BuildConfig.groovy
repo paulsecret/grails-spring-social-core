@@ -46,6 +46,6 @@ grails.project.dependency.resolution = {
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.8.5'
   }
   plugins {
-    compile(":spring-security-core:1.2.1")
+    compile(":spring-security-core:1.2.4")
   }
 }
