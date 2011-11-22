@@ -15,10 +15,11 @@
  */
 package grails.plugins.springsocial.service
 
+import org.springframework.social.connect.Connection
+import org.springframework.social.connect.ConnectionFactoryLocator
 import org.springframework.social.connect.ConnectionRepository
 import org.springframework.social.connect.UserProfile
-import org.springframework.social.connect.ConnectionFactoryLocator
-import org.springframework.social.connect.Connection
+import org.springframework.util.Assert
 import org.springframework.util.MultiValueMap
 
 class SpringSocialService {
@@ -29,7 +30,7 @@ class SpringSocialService {
   static transactional = false
 
   /**
-   *@see org.springframework.social.connect.ConnectionFactoryLocator#registeredProviderIds()
+   * @see org.springframework.social.connect.ConnectionFactoryLocator#registeredProviderIds()
    */
   Set<String> registeredProviderIds() {
     connectionFactoryLocator.registeredProviderIds()
@@ -56,8 +57,6 @@ class SpringSocialService {
   }
 
   private void verifyCurrentUser() {
-     if(!springSecurityService.isLoggedIn()) {
-      throw new IllegalStateException("There is no current user loggedId")
-    }
+    Assert.isTrue(springSecurityService.isLoggedIn(), "There is no current user loggedId")
   }
 }
