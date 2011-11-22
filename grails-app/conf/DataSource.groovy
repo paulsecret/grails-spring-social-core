@@ -29,7 +29,7 @@ environments {
     development {
         dataSource {
             dbCreate = "create-drop" // one of 'create', 'create-drop','update'
-            url = "jdbc:hsqldb:file:devDB"
+            url = "jdbc:hsqldb:mem:devDB"
         }
     }
     test {
