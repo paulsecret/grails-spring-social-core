@@ -58,12 +58,12 @@ class SpringSocialProviderSignInController {
 
   private String handleSignIn(Connection connection, GrailsWebRequest request, config) {
     String result
-    List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
+    List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection)
     if (userIds.size() == 0) {
       if (log.isDebugEnabled()) {
         log.debug("No user found in the repository, creating a new one...")
       }
-      ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, usersConnectionRepository);
+      ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, usersConnectionRepository)
       request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, RequestAttributes.SCOPE_SESSION)
       //TODO: Document this setting
       result = request.session.ss_oauth_redirect_on_signIn_attempt ?: config.page.handleSignIn
