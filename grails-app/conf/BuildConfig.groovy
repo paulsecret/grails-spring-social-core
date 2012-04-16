@@ -34,6 +34,8 @@ grails.project.dependency.resolution = {
     mavenRepo "http://maven.springframework.org/release"
     mavenRepo "http://maven.springframework.org/snapshot"
     mavenRepo "http://maven.springframework.org/milestone"
+    
+    grailsRepo "http://grails.org/plugins"
   }
   dependencies {
     def springSocialVersion = "1.0.2.RELEASE"
@@ -46,6 +48,6 @@ grails.project.dependency.resolution = {
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.8.5'
   }
   plugins {
-    compile(":spring-security-core:1.2.4")
+    compile(":spring-security-core:1.2.7.3")
   }
 }
