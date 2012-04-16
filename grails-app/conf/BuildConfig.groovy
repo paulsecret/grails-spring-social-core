@@ -36,12 +36,12 @@ grails.project.dependency.resolution = {
     mavenRepo "http://maven.springframework.org/milestone"
   }
   dependencies {
-    def springSocialVersion = "1.0.1.RELEASE"
+    def springSocialVersion = "1.0.2.RELEASE"
 
     compile("org.springframework.social:spring-social-core:${springSocialVersion}") { transitive = false }
     compile("org.springframework.social:spring-social-web:${springSocialVersion}") { transitive = false }
 
-    compile("org.springframework.security:spring-security-crypto:3.1.0.RC3") { transitive = false }
+    compile("org.springframework.security:spring-security-crypto:3.1.0.RELEASE") { transitive = false }
     compile("javax.inject:javax.inject:1")
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.8.5'
   }
