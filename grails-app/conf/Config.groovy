@@ -12,9 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-grails.views.default.codec="none" // none, html, base64
-grails.views.gsp.encoding="UTF-8"
- 
+grails.views.default.codec = "none" // none, html, base64
+grails.views.gsp.encoding = "UTF-8"
+
 grails.doc.authors = "Domingo Suarez Torres"
 grails.doc.license = "Apache 2"
 grails.doc.copyright = "Copyright Domingo Suarez Torres 2012"
