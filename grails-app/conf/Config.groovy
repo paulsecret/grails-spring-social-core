@@ -1,4 +1,4 @@
-/* Copyright 2011 the original author or authors.
+/* Copyright 2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,8 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+grails.views.default.codec="none" // none, html, base64
+grails.views.gsp.encoding="UTF-8"
+ 
 grails.doc.authors = "Domingo Suarez Torres"
 grails.doc.license = "Apache 2"
-grails.doc.copyright = "Copyright SynergyJ 2011"
-grails.doc.footer = "Spriung Social Core"
+grails.doc.copyright = "Copyright Domingo Suarez Torres 2012"
+grails.doc.footer = "Spring Social Core"
+

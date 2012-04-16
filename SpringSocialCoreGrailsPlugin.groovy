@@ -37,7 +37,7 @@ class SpringSocialCoreGrailsPlugin {
   String documentation = "http://grails.org/plugin/spring-social-core"
 
   String license = "APACHE"
-  String organization = [name: "SynergyJ", url: "http://synergyj.com/"]
+  String organization = [name: "Sindicato Source", url: "http://sindica.to"]
   String developers = [[name: "Domingo Suarez Torres", email: "domingo.suarez@gmail.com"], [name: "Jose Juan Reyes Zuniga", email: "neodevelop@gmail.com"]]
   String scm = [url: "https://github.com/synergyj/grails-spring-social-core"]
   String issueManagement = [system: "GITHUB", url: "https://github.com/synergyj/grails-spring-social-core/issues"]
