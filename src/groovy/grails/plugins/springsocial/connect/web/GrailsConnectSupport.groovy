@@ -1,4 +1,4 @@
-/* Copyright 2011 the original author or authors.
+/* Copyright 2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  */
 package grails.plugins.springsocial.connect.web
 
+import org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.social.connect.Connection
 import org.springframework.social.connect.ConnectionFactory
 import org.springframework.social.connect.support.OAuth1ConnectionFactory
@@ -30,7 +31,6 @@ import org.springframework.social.oauth2.OAuth2Parameters
 import org.springframework.util.MultiValueMap
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.context.request.RequestAttributes
-import org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib
 
 class GrailsConnectSupport extends ConnectSupport {
   private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";

@@ -1,4 +1,4 @@
-/* Copyright 2011 the original author or authors.
+/* Copyright 2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,14 @@
  */
 package grails.plugins.springsocial.config.core
 
-import javax.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.social.connect.ConnectionFactory
 import org.springframework.social.connect.ConnectionFactoryLocator
 import org.springframework.social.connect.support.ConnectionFactoryRegistry
 import org.springframework.stereotype.Component
+
+import javax.annotation.PostConstruct
 
 @Component
 class ConnectionFactoryConfigurer {
