@@ -44,7 +44,6 @@ grails.project.dependency.resolution = {
 
     compile("org.springframework.security:spring-security-crypto:3.1.0.RELEASE") { transitive = false }
     compile("javax.inject:javax.inject:1")
-    compile 'org.codehaus.jackson:jackson-mapper-asl:1.8.5'
   }
   plugins {
     compile(":spring-security-core:1.2.7.3")
