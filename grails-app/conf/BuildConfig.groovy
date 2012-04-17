@@ -51,15 +51,20 @@ grails.project.dependency.resolution = {
     test(":code-coverage:1.2.5") { export = false }
     test("org.spockframework:spock:0.6-groovy-1.8-SNAPSHOT") { export = false }
     build(":release:2.0.0") { export = false }
+    build(":rest-client-builder:1.0.2") { export = false }
   }
 }
+
+grails.project.repos.clickonero.url = "http://repo.clickonero.com/nexus/content/repositories/snapshots/"
 
 grails.release.scm.enabled = false
 //grails.project.repos.default = "grailsCentral"
 grails.project.repos.default = "clickonero"
 
 coverage {
-  exclusions = ["DefaultSpringSocialConfig*",
-      "SpringSocialCoreDefaultConfig*"]
+  exclusions = [
+      "DefaultSpringSocialConfig*",
+      "SpringSocialCoreDefaultConfig*"
+  ]
   enabledByDefault = true
 }
