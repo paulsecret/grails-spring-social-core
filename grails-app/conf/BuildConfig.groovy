@@ -46,15 +46,17 @@ grails.project.dependency.resolution = {
     compile("javax.inject:javax.inject:1")
   }
   plugins {
+    /*
+    This validation is for prevent load the following plugins in previous Grails versions.
+    I some Grails versions from 1.3.* the 'export = false' does not work. For Grails 2.* works properly
+    */
     if (grailsVersion.startsWith('2')) {
+      compile(":spring-security-core:1.2.7.3")
       test(":code-coverage:1.2.5") { export = false }
       test("org.spockframework:spock:0.6-groovy-1.8-SNAPSHOT") { export = false }
       build(":release:2.0.0") { export = false }
       build(":rest-client-builder:1.0.2") { export = false }
     }
-
-    compile(":spring-security-core:1.2.7.3")
-
   }
 }
 
