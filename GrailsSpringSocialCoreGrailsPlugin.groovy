@@ -15,7 +15,7 @@
 
 import grails.plugins.springsocial.SpringSecuritySigninService
 
-class SpringSocialCoreGrailsPlugin {
+class GrailsSpringSocialCoreGrailsPlugin {
 	def version = "0.1.33-SNAPSHOT" // added by set-version
   def grailsVersion = "1.3.0 > *"
   def dependsOn = [:]
