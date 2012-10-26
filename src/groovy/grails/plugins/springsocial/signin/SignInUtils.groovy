@@ -16,12 +16,24 @@ package grails.plugins.springsocial.signin
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
+import org.codehaus.groovy.grails.web.context.ServletContextHolder
+import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
+import org.codehaus.groovy.grails.commons.ApplicationHolder
+import grails.plugins.springsecurity.SpringSecurityService
 
-class SignInUtils {
+
+class SignInUtils{
 /**
  * Programmatically signs in the user with the given the user ID.
  */
   static void signin(String userId) {
-    SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(userId, null, null));
+	def springSecurityService = ApplicationHolder.getApplication().getMainContext().getBean('springSecurityService')
+	if(springSecurityService){
+		springSecurityService.reauthenticate(userId)
+	}else{
+		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(userId, null, null));
+	}
   }
 }
