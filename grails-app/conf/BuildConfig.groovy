@@ -20,7 +20,7 @@ grails.project.dependency.resolution = {
     // uncomment to disable ehcache
     // excludes 'ehcache'
   }
-  log "error" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+  log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
   repositories {
     grailsPlugins()
     grailsHome()
@@ -50,11 +50,13 @@ grails.project.dependency.resolution = {
     This validation is for prevent load the following plugins in previous Grails versions.
     In some Grails versions from 1.3.* the 'export = false' does not work. For Grails 2.* works properly
     */
+
     if (grailsVersion.startsWith('2')) {
       compile(":spring-security-core:1.2.7.3")
       test(":code-coverage:1.2.5") { export = false }
       build(":release:2.0.0") { export = false }
       build(":rest-client-builder:1.0.2") { export = false }
+	  compile ':svn:1.0.2'
     }
   }
 }
