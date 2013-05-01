@@ -61,9 +61,12 @@ grails.project.dependency.resolution = {
       exclude "spock-grails-support"
       export = false
     }
-    build(':release:2.2.1', ':rest-client-builder:1.0.3') {
+    build(":hibernate:${grailsVersion}", ':release:2.2.1', ':rest-client-builder:1.0.3') {
       export = false
     }
+
+    //plugins.=2.2.1
+    //plugins.tomcat=2.2.1
   }
 }
 
