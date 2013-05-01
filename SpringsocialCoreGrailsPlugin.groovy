@@ -30,8 +30,8 @@ class SpringsocialCoreGrailsPlugin {
 
   def author = "Domingo Suarez Torres"
   def authorEmail = "domingo.suarez@gmail.com"
-  def title = "Spring Social Core"
-  def description = "Spring Social Core plugin."
+  def title = "Grails Spring Social Core"
+  def description = "Grails Spring Social Core plugin."
 
   def documentation = "http://grails.org/plugin/spring-social-core"
 

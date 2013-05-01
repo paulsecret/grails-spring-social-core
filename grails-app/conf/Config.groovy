@@ -17,8 +17,8 @@ grails.views.gsp.encoding = "UTF-8"
 
 grails.doc.authors = "Domingo Suarez Torres"
 grails.doc.license = "Apache 2"
-grails.doc.copyright = "Copyright Domingo Suarez Torres 2012"
-grails.doc.footer = "Spring Social Core"
+grails.doc.copyright = "Copyright Domingo Suarez Torres 2013"
+grails.doc.footer = "Grails Spring Social Core"
 
 // configuration for plugin testing - will not be included in the plugin zip
 
