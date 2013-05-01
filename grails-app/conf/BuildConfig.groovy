@@ -44,17 +44,24 @@ grails.project.dependency.resolution = {
 
     compile("org.springframework.security:spring-security-crypto:3.1.0.RELEASE") { transitive = false }
     compile("javax.inject:javax.inject:1")
+
+    test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
+    test "org.gebish:geb-spock:0.9.0"
   }
   plugins {
-    /*
-    This validation is for prevent load the following plugins in previous Grails versions.
-    In some Grails versions from 1.3.* the 'export = false' does not work. For Grails 2.* works properly
-    */
-    if (grailsVersion.startsWith('2')) {
-      compile(":spring-security-core:1.2.7.3")
-      test(":code-coverage:1.2.5") { export = false }
-      build(":release:2.0.0") { export = false }
-      build(":rest-client-builder:1.0.2") { export = false }
+    compile(":spring-security-core:1.2.7.3")
+    test(":code-coverage:1.2.6") { export = false }
+    test(":codenarc:0.18.1") { export = false }
+    test(":fixtures:1.2") { export = false }
+    test(":functional-test-development:0.9.4") { export = false }
+    test(":geb:0.9.0") { export = false }
+    test(":guard:1.0.7") { export = false }
+    test(":spock:0.7") {
+      exclude "spock-grails-support"
+      export = false
+    }
+    build(':release:2.2.1', ':rest-client-builder:1.0.3') {
+      export = false
     }
   }
 }
@@ -64,8 +71,8 @@ grails.project.repos.default = "grailsCentral"
 
 coverage {
   exclusions = [
-      "DefaultSpringSocialConfig*",
-      "SpringSocialCoreDefaultConfig*"
+    "DefaultSpringSocialConfig*",
+    "SpringSocialCoreDefaultConfig*"
   ]
   enabledByDefault = true
 }
