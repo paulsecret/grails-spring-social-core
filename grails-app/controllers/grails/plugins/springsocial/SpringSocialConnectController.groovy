@@ -1,4 +1,4 @@
-/* Copyright 2012 the original author or authors.
+/* Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,10 @@
 package grails.plugins.springsocial
 
 import grails.plugins.springsecurity.SpringSecurityService
+import grails.plugins.springsocial.config.DefaultConfig
 import grails.plugins.springsocial.connect.web.GrailsConnectSupport
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
-import org.springframework.social.connect.ConnectionFactory
-import org.springframework.social.connect.ConnectionFactoryLocator
-import org.springframework.social.connect.ConnectionKey
-import org.springframework.social.connect.ConnectionRepository
-import org.springframework.social.connect.DuplicateConnectionException
-import org.springframework.social.connect.UsersConnectionRepository
+import org.springframework.social.connect.*
 import org.springframework.social.connect.web.ConnectSupport
 import org.springframework.util.Assert
 import org.springframework.util.LinkedMultiValueMap
@@ -62,7 +57,8 @@ class SpringSocialConnectController {
         log.warn("The connect feature only is available for Signed Users. New users perhaps can use SignIn feature.")
       }
       //TODO: Document this parameters
-      result = session.ss_auth_loginFromUrl ?: SpringSecurityUtils.securityConfig.auth.loginFormUrl
+      result = grailsApplication.config.springsocial.loginUrl ?: DefaultConfig.loginUrl
+      log.info("Redirecting to $result")
       redirect uri: result
     }
   }

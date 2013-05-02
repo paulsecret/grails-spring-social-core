@@ -32,3 +32,4 @@ web-app/WEB-INF/
 cobertura.ser
 stacktrace.log
 .gradle
+out
