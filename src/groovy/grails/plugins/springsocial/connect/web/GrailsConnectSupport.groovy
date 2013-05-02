@@ -28,6 +28,7 @@ import org.springframework.social.oauth2.AccessGrant
 import org.springframework.social.oauth2.GrantType
 import org.springframework.social.oauth2.OAuth2Operations
 import org.springframework.social.oauth2.OAuth2Parameters
+import org.springframework.util.Assert
 import org.springframework.util.MultiValueMap
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.context.request.RequestAttributes
@@ -38,6 +39,7 @@ class GrailsConnectSupport extends ConnectSupport {
   Boolean useAuthenticateUrl
 
   public String buildOAuthUrl(ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
+    Assert.notNull(connectionFactory, 'The connectionFactory is required')
     if (connectionFactory instanceof OAuth1ConnectionFactory) {
       return buildOAuth1Url((OAuth1ConnectionFactory<?>) connectionFactory, request, additionalParameters)
     } else if (connectionFactory instanceof OAuth2ConnectionFactory) {

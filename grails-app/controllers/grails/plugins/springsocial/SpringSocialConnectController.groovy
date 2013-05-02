@@ -53,9 +53,8 @@ class SpringSocialConnectController {
       result = webSupport.buildOAuthUrl(connectionFactory, nativeWebRequest, parameters)
       redirect url: result
     } else {
-      if (log.isWarnEnabled()) {
-        log.warn("The connect feature only is available for Signed Users. New users perhaps can use SignIn feature.")
-      }
+      log.warn("The connect feature only is available for Signed Users. New users perhaps can use SignIn feature.")
+
       //TODO: Document this parameters
       result = grailsApplication.config.springsocial.loginUrl ?: DefaultConfig.loginUrl
       log.info("Redirecting to $result")

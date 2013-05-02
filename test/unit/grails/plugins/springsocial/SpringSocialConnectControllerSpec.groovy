@@ -15,15 +15,20 @@
 package grails.plugins.springsocial
 
 import grails.plugins.springsecurity.SpringSecurityService
+import grails.plugins.springsocial.test.support.TestTwitterConnectionFactory
+import grails.plugins.springsocial.test.support.TestTwitterServiceProvider
 import grails.test.mixin.TestFor
+import org.springframework.social.connect.ConnectionFactory
+import org.springframework.social.connect.ConnectionFactoryLocator
 
 @TestFor(SpringSocialConnectController)
 class SpringSocialConnectControllerSpec extends spock.lang.Specification {
-  SpringSecurityService mock = Mock(SpringSecurityService)
+  SpringSecurityService mockSpringSecurityService = Mock(SpringSecurityService)
+  ConnectionFactoryLocator mockConnectionFactoryLocator = Mock(ConnectionFactoryLocator)
 
   def setup() {
-    controller.springSecurityService = mock
-
+    controller.springSecurityService = mockSpringSecurityService
+    //
   }
 
   def cleanup() {
@@ -31,22 +36,49 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
 
   void "user redirected to default location because is not logged in"() {
     when:
-    controller.connect()
+      controller.connect()
     then:
-    1 * mock.isLoggedIn() >> false
-    controller.response.status == 302
-    controller.response.header('Location').endsWith('/')
+      1 * mockSpringSecurityService.isLoggedIn() >> false
+      controller.response.status == 302
+      controller.response.header('Location').endsWith('/')
   }
 
   void "user redirected to specified location because is not logged in"() {
     def mockConfig = new ConfigObject()
     mockConfig.springsocial.loginUrl = "/loginuri"
     controller.grailsApplication.config = mockConfig
+
     when:
-    controller.connect()
+      controller.connect()
     then:
-    1 * mock.isLoggedIn() >> false
-    controller.response.status == 302
-    controller.response.header('Location').endsWith('/loginuri')
+      1 * mockSpringSecurityService.isLoggedIn() >> false
+      controller.response.status == 302
+      controller.response.header('Location').endsWith('/loginuri')
+  }
+
+  void "Exception when trying to connect and the providerId is missing"() {
+    controller.connectionFactoryLocator = mockConnectionFactoryLocator
+
+    when:
+      controller.connect()
+    then:
+      1 * mockSpringSecurityService.isLoggedIn() >> true
+      IllegalArgumentException ex = thrown()
+      ex.message == 'The providerId is required'
+  }
+
+  void "redirected to OAuth Service provider when all settings are right"() {
+    String providerId = 'twitter2'
+    ConnectionFactory mockConnectionFactory = new TestTwitterConnectionFactory()
+    controller.connectionFactoryLocator = mockConnectionFactoryLocator
+
+    when:
+      controller.params.providerId = providerId
+      controller.connect()
+    then:
+      1 * mockSpringSecurityService.isLoggedIn() >> true
+      1 * mockConnectionFactoryLocator.getConnectionFactory(providerId) >> mockConnectionFactory
+      controller.response.status == 302
+      controller.response.header('Location') == TestTwitterServiceProvider.authorizeUrl
   }
 }
