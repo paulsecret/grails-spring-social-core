@@ -14,11 +14,17 @@
  */
 package grails.plugins.springsocial
 
+import grails.plugins.springsecurity.SpringSecurityService
 import grails.plugins.springsocial.connect.web.GrailsConnectSupport
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
+import org.springframework.social.connect.ConnectionFactory
+import org.springframework.social.connect.ConnectionFactoryLocator
 import org.springframework.social.connect.ConnectionKey
+import org.springframework.social.connect.ConnectionRepository
 import org.springframework.social.connect.DuplicateConnectionException
+import org.springframework.social.connect.UsersConnectionRepository
+import org.springframework.social.connect.web.ConnectSupport
 import org.springframework.util.Assert
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
@@ -29,16 +35,17 @@ class SpringSocialConnectController {
   private static final String DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE = "_duplicateConnectionException"
   private static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social.addConnection.duplicate"
 
-  def connectionFactoryLocator
-  def connectionRepository
+  ConnectionFactoryLocator connectionFactoryLocator
+  ConnectionRepository connectionRepository
 
-  def webSupport = new GrailsConnectSupport(mapping: "springSocialConnect")
+  ConnectSupport webSupport = new GrailsConnectSupport(mapping: "springSocialConnect")
+  SpringSecurityService springSecurityService
 
   static allowedMethods = [connect: 'POST', oauthCallback: 'GET', disconnect: 'DELETE']
 
-  def connect = {
+  def connect() {
     String result
-    if (isLoggedIn()) {
+    if (springSecurityService.isLoggedIn()) {
       def providerId = params.providerId
 
       Assert.hasText(providerId, "The providerId is required")
@@ -60,7 +67,7 @@ class SpringSocialConnectController {
     }
   }
 
-  def oauthCallback = {
+  def oauthCallback() {
     def providerId = params.providerId
 
     Assert.hasText(providerId, "The providerId is required")
@@ -92,10 +99,12 @@ class SpringSocialConnectController {
     redirect(uri: uri)
   }
 
-  def disconnect = {
+  def disconnect() {
     def providerId = params.providerId
     def providerUserId = params.providerUserId
     Assert.hasText(providerId, "The providerId is required")
+
+    ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
 
     if (providerUserId) {
       if (log.isInfoEnabled()) {
