@@ -21,6 +21,8 @@ import grails.test.mixin.TestFor
 import org.springframework.social.connect.ConnectionFactory
 import org.springframework.social.connect.ConnectionFactoryLocator
 
+import static org.springframework.http.HttpStatus.MOVED_TEMPORARILY
+
 @TestFor(SpringSocialConnectController)
 class SpringSocialConnectControllerSpec extends spock.lang.Specification {
   SpringSecurityService mockSpringSecurityService = Mock(SpringSecurityService)
@@ -28,10 +30,6 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
 
   def setup() {
     controller.springSecurityService = mockSpringSecurityService
-    //
-  }
-
-  def cleanup() {
   }
 
   void "user redirected to default location because is not logged in"() {
@@ -39,21 +37,22 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
       controller.connect()
     then:
       1 * mockSpringSecurityService.isLoggedIn() >> false
-      controller.response.status == 302
+      controller.response.status == MOVED_TEMPORARILY.value()
       controller.response.header('Location').endsWith('/')
   }
 
   void "user redirected to specified location because is not logged in"() {
     def mockConfig = new ConfigObject()
-    mockConfig.springsocial.loginUrl = "/loginuri"
+    String loginUri = "/loginuri"
+    mockConfig.springsocial.loginUrl = loginUri
     controller.grailsApplication.config = mockConfig
 
     when:
       controller.connect()
     then:
       1 * mockSpringSecurityService.isLoggedIn() >> false
-      controller.response.status == 302
-      controller.response.header('Location').endsWith('/loginuri')
+      controller.response.status == MOVED_TEMPORARILY.value()
+      controller.response.header('Location').endsWith(loginUri)
   }
 
   void "Exception when trying to connect and the providerId is missing"() {
@@ -78,7 +77,7 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
     then:
       1 * mockSpringSecurityService.isLoggedIn() >> true
       1 * mockConnectionFactoryLocator.getConnectionFactory(providerId) >> mockConnectionFactory
-      controller.response.status == 302
+      controller.response.status == MOVED_TEMPORARILY.value()
       controller.response.header('Location') == TestTwitterServiceProvider.authorizeUrl
   }
 }
