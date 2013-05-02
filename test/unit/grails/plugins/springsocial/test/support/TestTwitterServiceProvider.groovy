@@ -25,25 +25,25 @@ import org.springframework.util.MultiValueMap
  * To change this template use File | Settings | File Templates.
  */
 class TestTwitterServiceProvider implements OAuth1ServiceProvider<TestTwitterApi> {
-  public static final authorizeUrl = 'http://a_auth_service_provider.com/service/'
+  public static final authorizeUrl = 'http://a_auth_service_provider.com/oauth/authorize'
 
   OAuth1Operations getOAuthOperations() {
     return new OAuth1Operations() {
 
       OAuth1Version getVersion() {
-        OAuth1Version.CORE_10
+        OAuth1Version.CORE_10_REVISION_A
       }
 
-      OAuthToken fetchRequestToken(String s, MultiValueMap<String, String> stringStringMultiValueMap) {
+      OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters) {
         new OAuthToken('value', 'secret')
       }
 
-      String buildAuthorizeUrl(String s, OAuth1Parameters oAuth1Parameters) {
-        authorizeUrl
+      String buildAuthorizeUrl(String requestToken, OAuth1Parameters parameters) {
+        "${authorizeUrl}?request_token=${requestToken}"
       }
 
-      String buildAuthenticateUrl(String s, OAuth1Parameters oAuth1Parameters) {
-        authorizeUrl
+      String buildAuthenticateUrl(String requestToken, OAuth1Parameters parameters) {
+        buildAuthorizeUrl(requestToken, parameters)
       }
 
       OAuthToken exchangeForAccessToken(AuthorizedRequestToken authorizedRequestToken, MultiValueMap<String, String> stringStringMultiValueMap) {

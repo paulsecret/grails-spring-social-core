@@ -78,6 +78,6 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
       1 * mockSpringSecurityService.isLoggedIn() >> true
       1 * mockConnectionFactoryLocator.getConnectionFactory(providerId) >> mockConnectionFactory
       controller.response.status == MOVED_TEMPORARILY.value()
-      controller.response.header('Location') == TestTwitterServiceProvider.authorizeUrl
+      controller.response.header('Location').startsWith(TestTwitterServiceProvider.authorizeUrl)
   }
 }
