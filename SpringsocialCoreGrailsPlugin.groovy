@@ -16,7 +16,7 @@
 import grails.plugins.springsocial.SpringSecuritySigninService
 
 class SpringsocialCoreGrailsPlugin {
-	def version = "0.1.33-SNAPSHOT" // added by set-version
+	def version = "0.1.34-SNAPSHOT" // added by set-version
   def grailsVersion = "1.3.0 > *"
 
   def pluginExcludes = [
@@ -37,7 +37,7 @@ class SpringsocialCoreGrailsPlugin {
 
   def license = "APACHE"
   def organization = [name: "Grails Spring Social", url: "http://github.com/Grails-Spring-Social"]
-  def developers = [[name: "Domingo Suarez Torres", email: "domingo.suarez@gmail.com"], [name: "Jose Juan Reyes Zuniga", email: "neodevelop@gmail.com"]]
+  def developers = []
   def scm = [url: "https://github.com/Grails-Spring-Social/grails-spring-social-core"]
   def issueManagement = [system: "GITHUB", url: "https://github.com/Grails-Spring-Social/grails-spring-social-core/issues"]
 
