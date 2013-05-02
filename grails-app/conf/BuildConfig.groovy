@@ -50,23 +50,19 @@ grails.project.dependency.resolution = {
     test "org.gebish:geb-spock:0.9.0"
   }
   plugins {
+
     compile(":spring-security-core:1.2.7.3")
-    test(":code-coverage:1.2.6") { export = false }
-    test(":codenarc:0.18.1") { export = false }
-    test(":fixtures:1.2") { export = false }
-    test(":functional-test-development:0.9.4") { export = false }
-    test(":geb:0.9.0") { export = false }
-    test(":guard:1.0.7") { export = false }
+
+    test(":geb:0.9.0", ":functional-test-development:0.9.4", ":fixtures:1.2", ":codenarc:0.18.1", ":code-coverage:1.2.6", ":guard:1.0.7", ":hibernate:${grailsVersion}") {
+      export = false
+    }
     test(":spock:0.7") {
       exclude "spock-grails-support"
       export = false
     }
-    build(":hibernate:${grailsVersion}", ':release:2.2.1', ':rest-client-builder:1.0.3') {
+    build(":tomcat:${grailsVersion}", ":hibernate:${grailsVersion}", ':release:2.2.1', ':rest-client-builder:1.0.3') {
       export = false
     }
-
-    //plugins.=2.2.1
-    //plugins.tomcat=2.2.1
   }
 }
 
