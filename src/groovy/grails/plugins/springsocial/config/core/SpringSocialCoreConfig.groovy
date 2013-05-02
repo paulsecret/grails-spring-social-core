@@ -54,7 +54,6 @@ class SpringSocialCoreConfig {
 
   @Bean
   @Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
-
   ConnectionRepository connectionRepository() {
     def authentication = SecurityContextHolder.getContext().getAuthentication()
     if (!authentication) {
