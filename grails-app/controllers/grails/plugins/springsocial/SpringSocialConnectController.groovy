@@ -23,8 +23,23 @@ import org.springframework.social.connect.web.ConnectSupport
 import org.springframework.util.Assert
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.context.request.RequestAttributes
 
+/**
+ * Generic UI controller for managing the account-to-service-provider connection flow.
+ * <ul>
+ * <li>GET /connect/{providerId}  - Get a web page showing connection status to {providerId}.</li>
+ * <li>POST /connect/{providerId} - Initiate an connection with {providerId}.</li>
+ * <li>GET /connect/{providerId}?oauth_verifier||code - Receive {providerId} authorization callback and establish the connection.</li>
+ * <li>DELETE /connect/{providerId} - Disconnect from {providerId}.</li>
+ * </ul>
+ *
+ * This code was borrowed from SpringSocial code and adapted to Grails.
+ * @see org.springframework.social.connect.web.ConnectController
+ *
+ * @author Domingo Suarez Torres
+ */
 class SpringSocialConnectController {
 
   private static final String DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE = "_duplicateConnectionException"
@@ -41,15 +56,15 @@ class SpringSocialConnectController {
   def connect() {
     String result
     if (springSecurityService.isLoggedIn()) {
-      def providerId = params.providerId
+      String providerId = params.providerId
 
       Assert.hasText(providerId, "The providerId is required")
 
-      def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
+      ConnectionFactory connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
       MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
       //TODO: Handle preconnect filters
       //preConnect(connectionFactory, parameters, request);
-      def nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
+      NativeWebRequest nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
       result = webSupport.buildOAuthUrl(connectionFactory, nativeWebRequest, parameters)
       redirect url: result
     } else {
@@ -63,12 +78,12 @@ class SpringSocialConnectController {
   }
 
   def oauthCallback() {
-    def providerId = params.providerId
+    String providerId = params.providerId
 
-    Assert.hasText(providerId, "The providerId is required")
+    Assert.hasText(providerId, 'The providerId is required')
 
-    def config = SpringSocialUtils.config.get(providerId)
-    def denied = params.denied
+    def config = grailsApplication.config.springsocial.get(providerId)
+    String denied = params.denied
 
     if (denied) {
       //TODO: Document this parameters
@@ -81,22 +96,22 @@ class SpringSocialConnectController {
     }
 
     //TODO: Document this parameter
-    def uriRedirect = session.ss_oauth_redirect_callback
+    String uriRedirect = session.ss_oauth_redirect_callback
 
     //TODO: Document this parameter
-    def uri = uriRedirect ?: config.page.connectedHome
+    String uri = uriRedirect ?: config.page.connectedHome
 
-    def connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
-    def nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
-    def connection = webSupport.completeConnection(connectionFactory, nativeWebRequest)
+    ConnectionFactory connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
+    NativeWebRequest nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
+    Connection connection = webSupport.completeConnection(connectionFactory, nativeWebRequest)
 
     addConnection(connection, connectionFactory, nativeWebRequest)
     redirect(uri: uri)
   }
 
   def disconnect() {
-    def providerId = params.providerId
-    def providerUserId = params.providerUserId
+    String providerId = params.providerId
+    String providerUserId = params.providerUserId
     Assert.hasText(providerId, "The providerId is required")
 
     ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
@@ -132,4 +147,6 @@ class SpringSocialConnectController {
       request.setAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION)
     }
   }
+
+
 }
