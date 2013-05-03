@@ -25,8 +25,8 @@ import static org.springframework.http.HttpStatus.MOVED_TEMPORARILY
 
 @TestFor(SpringSocialConnectController)
 class SpringSocialConnectControllerSpec extends spock.lang.Specification {
-  SpringSecurityService mockSpringSecurityService = Mock(SpringSecurityService)
-  ConnectionFactoryLocator mockConnectionFactoryLocator = Mock(ConnectionFactoryLocator)
+  SpringSecurityService mockSpringSecurityService = Mock()
+  ConnectionFactoryLocator mockConnectionFactoryLocator = Mock()
 
   def setup() {
     controller.springSecurityService = mockSpringSecurityService
@@ -42,11 +42,11 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
   }
 
   void "user redirected to specified location because is not logged in"() {
-    def mockConfig = new ConfigObject()
-    String loginUri = "/loginuri"
-    mockConfig.springsocial.loginUrl = loginUri
-    controller.grailsApplication.config = mockConfig
-
+    given:
+      def mockConfig = new ConfigObject()
+      String loginUri = "/loginuri"
+      mockConfig.springsocial.loginUrl = loginUri
+      controller.grailsApplication.config = mockConfig
     when:
       controller.connect()
     then:
@@ -56,8 +56,8 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
   }
 
   void "Exception when trying to connect and the providerId is missing"() {
-    controller.connectionFactoryLocator = mockConnectionFactoryLocator
-
+    given:
+      controller.connectionFactoryLocator = mockConnectionFactoryLocator
     when:
       controller.connect()
     then:
@@ -67,10 +67,10 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
   }
 
   void "redirected to OAuth Service provider when all settings are right"() {
-    String providerId = 'twitter2'
-    ConnectionFactory mockConnectionFactory = new TestTwitterConnectionFactory()
-    controller.connectionFactoryLocator = mockConnectionFactoryLocator
-
+    given:
+      String providerId = 'twitter2'
+      ConnectionFactory mockConnectionFactory = new TestTwitterConnectionFactory()
+      controller.connectionFactoryLocator = mockConnectionFactoryLocator
     when:
       controller.params.providerId = providerId
       controller.connect()
@@ -80,4 +80,20 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
       controller.response.status == MOVED_TEMPORARILY.value()
       controller.response.header('Location').startsWith(TestTwitterServiceProvider.authorizeUrl)
   }
+
+  void "oauth callback without providerID"() {
+    when:
+      controller.oauthCallback()
+    then:
+      IllegalArgumentException ex = thrown()
+      ex.message == 'The providerId is required'
+  }
+
+  /*void "oauth callback without providerIDs"() {
+    when:
+      controller.params.providerId = 'twitter'
+      controller.oauthCallback()
+    then:
+      true
+  }*/
 }
