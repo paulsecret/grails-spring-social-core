@@ -25,6 +25,7 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.context.request.RequestAttributes
+import org.springframework.web.context.request.WebRequest
 
 /**
  * Generic UI controller for managing the account-to-service-provider connection flow.
@@ -42,13 +43,13 @@ import org.springframework.web.context.request.RequestAttributes
  */
 class SpringSocialConnectController {
 
-  private static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social.addConnection.duplicate"
-  private static final String PROVIDER_ERROR_ATTRIBUTE = "social.provider.error";
+  private static final String DUPLICATE_CONNECTION_ATTRIBUTE = 'social.addConnection.duplicate'
+  private static final String PROVIDER_ERROR_ATTRIBUTE = 'social.provider.error'
 
   ConnectionFactoryLocator connectionFactoryLocator
   ConnectionRepository connectionRepository
 
-  ConnectSupport webSupport = new GrailsConnectSupport(mapping: "springSocialConnect")
+  ConnectSupport webSupport = new GrailsConnectSupport(mapping: 'springSocialConnect')
   SpringSecurityService springSecurityService
 
   static allowedMethods = [connect: 'POST', oauthCallback: 'GET', disconnect: 'DELETE']
@@ -58,17 +59,17 @@ class SpringSocialConnectController {
     if (springSecurityService.isLoggedIn()) {
       String providerId = params.providerId
 
-      Assert.hasText(providerId, "The providerId is required")
+      Assert.hasText(providerId, 'The providerId is required')
 
       ConnectionFactory connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
-      MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+      MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>()
       //TODO: Handle preconnect filters
-      //preConnect(connectionFactory, parameters, request);
+      //preConnect(connectionFactory, parameters, request)
       NativeWebRequest nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
       result = webSupport.buildOAuthUrl(connectionFactory, nativeWebRequest, parameters)
       redirect url: result
     } else {
-      log.warn("The connect feature only is available for Signed Users. New users perhaps can use SignIn feature.")
+      log.warn('The connect feature only is available for Signed Users. New users perhaps can use SignIn feature.')
 
       result = getUrlLogin()
       log.info("Redirecting to $result")
@@ -81,7 +82,7 @@ class SpringSocialConnectController {
 
     Assert.hasText(providerId, 'The providerId is required')
 
-    def config = grailsApplication.config.springsocial.get(providerId)
+    ConfigObject config = getConfigByProviderId(providerId)
 
     if(!config) {
       //TODO: Maybe send a http status 50x
@@ -93,7 +94,7 @@ class SpringSocialConnectController {
 
     if (denied) {
       //TODO: Document this parameters
-      def uriRedirectOnDenied = getPageDeniedHome(config)
+      String uriRedirectOnDenied = getPageDeniedHome(config)
 
       log.info("The user has denied accesss to ${providerId} profile. Redirecting to uri: ${uriRedirectOnDenied}")
 
@@ -107,34 +108,40 @@ class SpringSocialConnectController {
     NativeWebRequest nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
     Connection connection = webSupport.completeConnection(connectionFactory, nativeWebRequest)
 
-    addConnection(connection, connectionFactory, nativeWebRequest)
+    //addConnection(connection, connectionFactory, nativeWebRequest)
+    addConnection(connection, nativeWebRequest)
     redirect(uri: uri)
   }
 
   def disconnect() {
     String providerId = params.providerId
     String providerUserId = params.providerUserId
-    Assert.hasText(providerId, "The providerId is required")
+    Assert.hasText(providerId, 'The providerId is required')
 
-    ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
+    //TODO: implement this
+    //ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
+    //preDisconnect(connectionFactory, request)
 
     if (providerUserId) {
       log.info("Disconecting from ${providerId} to ${providerUserId}")
-      connectionRepository.removeConnection(new ConnectionKey(providerId, providerUserId));
+      connectionRepository.removeConnection(new ConnectionKey(providerId, providerUserId))
     } else {
       log.info("Disconecting from ${providerId}")
       connectionRepository.removeConnections(providerId)
     }
 
-    def cfg = SpringSocialUtils.config.get(providerId)
+    //TODO: implement this
+    //postDisconnect(connectionFactory, request)
 
+    ConfigObject config = getConfigByProviderId(providerId)
     //TODO: Document this parameter
-    def postDisconnectUri = params.ss_post_disconnect_uri ?: cfg.postDisconnectUri
+    String postDisconnectUri = getPagePostDisconnectHome(config)
     log.info("redirecting to ${postDisconnectUri}")
     redirect(uri: postDisconnectUri)
   }
 
-  private void addConnection(connection, connectionFactory, request) {
+  //private void addConnection(Connection<?> connection, ConnectionFactory<?> connectionFactory, WebRequest request) {
+  private void addConnection(Connection<?> connection, WebRequest request) {
     try {
       connectionRepository.addConnection(connection)
       //TODO: handle post connections interceptors
@@ -157,5 +164,14 @@ class SpringSocialConnectController {
   private String getPageDeniedHome(ConfigObject config) {
     //TODO: Document this parameter
     config.page?.deniedHome ?: DefaultConfig.pageDeniedHome
+  }
+
+  private String getPagePostDisconnectHome(ConfigObject config) {
+    //TODO: Document this parameter
+    config?.page?.postDisconnectHome ?: DefaultConfig.pagePostDisconnectHome
+  }
+
+  private ConfigObject getConfigByProviderId(String providerId) {
+    grailsApplication.config.springsocial?.get(providerId)
   }
 }

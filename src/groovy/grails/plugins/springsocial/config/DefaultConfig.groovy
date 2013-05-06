@@ -25,4 +25,5 @@ class DefaultConfig {
   final static String loginUrl = '/'
   final static String pageConnectedHome = '/'
   final static String pageDeniedHome = '/'
+  final static String pagePostDisconnectHome = '/'
 }

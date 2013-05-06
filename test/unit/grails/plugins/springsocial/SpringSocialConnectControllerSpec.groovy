@@ -20,6 +20,7 @@ import grails.plugins.springsocial.test.support.TestTwitterServiceProvider
 import grails.test.mixin.TestFor
 import org.springframework.social.connect.ConnectionFactory
 import org.springframework.social.connect.ConnectionFactoryLocator
+import org.springframework.social.connect.ConnectionKey
 import org.springframework.social.connect.ConnectionRepository
 
 import static org.springframework.http.HttpStatus.MOVED_TEMPORARILY
@@ -125,11 +126,43 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
       mockConfig.springsocial.twitter.foo = 'foo'
       controller.grailsApplication.config = mockConfig
       controller.params.denied = 'true'
-    when:
       controller.params.providerId = providerId
+    when:
       controller.oauthCallback()
     then:
       controller.response.status == MOVED_TEMPORARILY.value()
+      isLoginHome()
+  }
+
+  void "trying to disconnect with no providerId"() {
+    when:
+      controller.disconnect()
+    then:
+      IllegalArgumentException exception = thrown()
+      exception.message == 'The providerId is required'
+  }
+
+  void "trying to disconnect with providerId"() {
+    given:
+      String providerId = 'twitter'
+      controller.params.providerId = providerId
+    when:
+      controller.disconnect()
+    then:
+      1 * mockConnectionRepository.removeConnections(providerId)
+      isLoginHome()
+  }
+
+  void "trying to disconnect with providerId and providerUserId"() {
+    given:
+      String providerId = 'twitter'
+      String providerUserId = 'someuser'
+      controller.params.providerId = providerId
+      controller.params.providerUserId = providerUserId
+    when:
+      controller.disconnect()
+    then:
+      1 * mockConnectionRepository.removeConnection(new ConnectionKey(providerId, providerUserId))
       isLoginHome()
   }
 
