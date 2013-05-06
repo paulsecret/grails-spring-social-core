@@ -20,6 +20,7 @@ import grails.plugins.springsocial.test.support.TestTwitterServiceProvider
 import grails.test.mixin.TestFor
 import org.springframework.social.connect.ConnectionFactory
 import org.springframework.social.connect.ConnectionFactoryLocator
+import org.springframework.social.connect.ConnectionRepository
 
 import static org.springframework.http.HttpStatus.MOVED_TEMPORARILY
 
@@ -27,9 +28,13 @@ import static org.springframework.http.HttpStatus.MOVED_TEMPORARILY
 class SpringSocialConnectControllerSpec extends spock.lang.Specification {
   SpringSecurityService mockSpringSecurityService = Mock()
   ConnectionFactoryLocator mockConnectionFactoryLocator = Mock()
+  ConnectionRepository mockConnectionRepository = Mock()
 
   def setup() {
     controller.springSecurityService = mockSpringSecurityService
+    controller.grailsApplication.config = new ConfigObject()
+    controller.connectionFactoryLocator = mockConnectionFactoryLocator
+    controller.connectionRepository = mockConnectionRepository
   }
 
   void "user redirected to default location because is not logged in"() {
@@ -38,7 +43,7 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
     then:
       1 * mockSpringSecurityService.isLoggedIn() >> false
       controller.response.status == MOVED_TEMPORARILY.value()
-      controller.response.header('Location').endsWith('/')
+      isLoginHome()
   }
 
   void "user redirected to specified location because is not logged in"() {
@@ -89,11 +94,46 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
       ex.message == 'The providerId is required'
   }
 
-  /*void "oauth callback without providerIDs"() {
+  void "oauth callback with a valid providerID and the config is missing for that provider"() {
     when:
       controller.params.providerId = 'twitter'
       controller.oauthCallback()
     then:
-      true
-  }*/
+      controller.response.status == MOVED_TEMPORARILY.value()
+      isLoginHome()
+  }
+
+  void "oauth callback sucessfully"() {
+    given:
+      String providerId = 'twitter'
+      def mockConfig = new ConfigObject()
+      mockConfig.springsocial.twitter.foo = 'foo'
+      controller.grailsApplication.config = mockConfig
+    when:
+      controller.params.providerId = providerId
+      controller.oauthCallback()
+    then:
+      1 * mockConnectionFactoryLocator.getConnectionFactory(providerId) >> new TestTwitterConnectionFactory()
+      controller.response.status == MOVED_TEMPORARILY.value()
+      isLoginHome()
+  }
+
+  void "oauth callback and provider or user denied access"() {
+    given:
+      String providerId = 'twitter'
+      def mockConfig = new ConfigObject()
+      mockConfig.springsocial.twitter.foo = 'foo'
+      controller.grailsApplication.config = mockConfig
+      controller.params.denied = 'true'
+    when:
+      controller.params.providerId = providerId
+      controller.oauthCallback()
+    then:
+      controller.response.status == MOVED_TEMPORARILY.value()
+      isLoginHome()
+  }
+
+  private boolean isLoginHome() {
+    controller.response.header('Location') == 'http://localhost:8080/'
+  }
 }

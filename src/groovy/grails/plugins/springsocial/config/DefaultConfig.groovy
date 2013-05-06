@@ -23,4 +23,6 @@ package grails.plugins.springsocial.config
  */
 class DefaultConfig {
   final static String loginUrl = '/'
+  final static String pageConnectedHome = '/'
+  final static String pageDeniedHome = '/'
 }
