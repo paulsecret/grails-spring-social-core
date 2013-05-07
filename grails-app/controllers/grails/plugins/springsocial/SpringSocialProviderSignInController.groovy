@@ -21,6 +21,7 @@ import org.springframework.social.connect.Connection
 import org.springframework.social.connect.ConnectionFactory
 import org.springframework.social.connect.ConnectionFactoryLocator
 import org.springframework.social.connect.ConnectionRepository
+import org.springframework.social.connect.web.ConnectSupport
 import org.springframework.social.connect.web.ProviderSignInAttempt
 import org.springframework.social.connect.web.SignInAdapter
 import org.springframework.util.Assert
@@ -33,13 +34,13 @@ class SpringSocialProviderSignInController {
   def signInService
   def usersConnectionRepository
   def requestCache
-  GrailsConnectSupport webSupport = new GrailsConnectSupport(mapping: "springSocialSignIn")
+  ConnectSupport webSupport = new GrailsConnectSupport(mapping: 'springSocialSignIn')
   static allowedMethods = [signin: 'POST', oauthCallback: 'GET', disconnect: 'DELETE']
 
   def signin() {
     String providerId = params.providerId
 
-    Assert.hasText(providerId, "The providerId is required")
+    Assert.hasText(providerId, 'The providerId is required')
 
     ConnectionFactory connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
     NativeWebRequest nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
@@ -50,7 +51,7 @@ class SpringSocialProviderSignInController {
   def oauthCallback() {
     String providerId = params.providerId
 
-    Assert.hasText(providerId, "The providerId is required")
+    Assert.hasText(providerId, 'The providerId is required')
 
     NativeWebRequest nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
     def config = SpringSocialUtils.config.get(providerId)
