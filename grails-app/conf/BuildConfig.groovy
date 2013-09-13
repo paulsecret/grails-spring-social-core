@@ -48,6 +48,7 @@ grails.project.dependency.resolution = {
 
     test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
     test "org.gebish:geb-spock:0.9.0"
+    test 'org.mockito:mockito-all:1.9.5'
   }
   plugins {
 
