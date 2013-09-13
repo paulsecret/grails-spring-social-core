@@ -80,4 +80,6 @@ coverage {
     "SpringSocialCoreDefaultConfig*"
   ]
   enabledByDefault = true
+  xml = true
+  html = true
 }
