@@ -38,7 +38,7 @@ grails.project.dependency.resolution = {
     grailsRepo "http://grails.org/plugins"
   }
   dependencies {
-    def springSocialVersion = "1.0.2.RELEASE"
+    def springSocialVersion = "1.0.3.RELEASE"
 
     compile("org.springframework.social:spring-social-core:${springSocialVersion}") { transitive = false }
     compile("org.springframework.social:spring-social-web:${springSocialVersion}") { transitive = false }
@@ -53,14 +53,18 @@ grails.project.dependency.resolution = {
 
     compile(":spring-security-core:1.2.7.3")
 
-    test(":geb:0.9.0", ":functional-test-development:0.9.4", ":fixtures:1.2", ":codenarc:0.18.1", ":code-coverage:1.2.6", ":guard:1.0.7", ":hibernate:${grailsVersion}") {
+    compile(":hibernate:3.6.10.1", ":tomcat:7.0.42") {
+      export = false
+    }
+
+    test(":geb:0.9.1", ":functional-test-development:0.9.4", ":fixtures:1.3-SNAPSHOT", ":codenarc:0.19", ":code-coverage:1.2.6", ":guard:1.0.7") {
       export = false
     }
     test(":spock:0.7") {
       exclude "spock-grails-support"
       export = false
     }
-    build(":tomcat:${grailsVersion}", ":hibernate:${grailsVersion}", ':release:2.2.1', ':rest-client-builder:1.0.3') {
+    build(':release:3.0.0', ':rest-client-builder:1.0.3') {
       export = false
     }
   }
