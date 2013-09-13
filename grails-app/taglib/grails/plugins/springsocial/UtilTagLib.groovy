@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2013 Domingo Suarez Torres.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@ class UtilTagLib {
     springSocialService.registeredProviderIds()
   }
 
-  def isCurrentUserConnectedTo = {attrs, body ->
+  def isCurrentUserConnectedTo = { attrs, body ->
     springSocialService.isCurrentUserConnectedTo(attrs.providerId)
   }
 
-  def currentUserProfilesToService = {attrs, body ->
+  def currentUserProfilesToService = { attrs, body ->
     springSocialService.getUserProfile(attrs.providerId)
   }
 }

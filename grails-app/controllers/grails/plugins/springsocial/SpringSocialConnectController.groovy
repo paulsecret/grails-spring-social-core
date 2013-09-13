@@ -1,4 +1,4 @@
-/* Copyright 2013 the original author or authors.
+/* Copyright 2013 Domingo Suarez Torres.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ class SpringSocialConnectController {
 
     ConfigObject config = getConfigByProviderId(providerId)
 
-    if(!config) {
+    if (!config) {
       //TODO: Maybe send a http status 50x
       String result = getUrlLogin()
       redirect uri: result

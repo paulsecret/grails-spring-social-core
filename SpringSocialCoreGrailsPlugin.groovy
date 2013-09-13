@@ -1,4 +1,4 @@
-/* Copyright 2012 the original author or authors.
+/* Copyright 2013 Domingo Suarez Torres.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,21 @@
 import grails.plugins.springsocial.SpringSecuritySigninService
 
 class SpringSocialCoreGrailsPlugin {
-	def version = "0.1.34-SNAPSHOT" // added by set-version
+  def version = "0.1.34-SNAPSHOT" // added by set-version
   def grailsVersion = "2.0.0 > *"
 
   def pluginExcludes = [
-      "grails-app/views/error.gsp",
-      "grails-app/conf/Config.groovy",
-      "grails-app/conf/DataSource.groovy",
-      "grails-app/i18n/**",
-      'docs/**',
-      'src/docs/**'
+    "grails-app/views/error.gsp",
+    "grails-app/conf/Config.groovy",
+    "grails-app/conf/DataSource.groovy",
+    "grails-app/i18n/**",
+    "web-app/images/**",
+    "web-app/js/**",
+    "web-app/css/errors.css",
+    "web-app/css/main.css",
+    "web-app/css/mobile.css",
+    'docs/**',
+    'src/docs/**'
   ]
 
   def author = "Domingo Suarez Torres"
