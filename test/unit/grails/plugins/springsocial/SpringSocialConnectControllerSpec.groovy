@@ -22,11 +22,12 @@ import org.springframework.social.connect.ConnectionFactory
 import org.springframework.social.connect.ConnectionFactoryLocator
 import org.springframework.social.connect.ConnectionKey
 import org.springframework.social.connect.ConnectionRepository
+import spock.lang.Specification
 
-import static org.springframework.http.HttpStatus.MOVED_TEMPORARILY
+import static org.springframework.http.HttpStatus.FOUND
 
 @TestFor(SpringSocialConnectController)
-class SpringSocialConnectControllerSpec extends spock.lang.Specification {
+class SpringSocialConnectControllerSpec extends Specification {
   SpringSecurityService mockSpringSecurityService = Mock()
   ConnectionFactoryLocator mockConnectionFactoryLocator = Mock()
   ConnectionRepository mockConnectionRepository = Mock()
@@ -43,7 +44,7 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
     controller.connect()
     then:
     1 * mockSpringSecurityService.isLoggedIn() >> false
-    controller.response.status == MOVED_TEMPORARILY.value()
+    controller.response.status == FOUND.value()
     isLoginHome()
   }
 
@@ -57,7 +58,7 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
     controller.connect()
     then:
     1 * mockSpringSecurityService.isLoggedIn() >> false
-    controller.response.status == MOVED_TEMPORARILY.value()
+    controller.response.status == FOUND.value()
     controller.response.header('Location').endsWith(loginUri)
   }
 
@@ -83,7 +84,7 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
     then:
     1 * mockSpringSecurityService.isLoggedIn() >> true
     1 * mockConnectionFactoryLocator.getConnectionFactory(providerId) >> mockConnectionFactory
-    controller.response.status == MOVED_TEMPORARILY.value()
+    controller.response.status == FOUND.value()
     controller.response.header('Location').startsWith(TestTwitterServiceProvider.authorizeUrl)
   }
 
@@ -100,7 +101,7 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
     controller.params.providerId = 'twitter'
     controller.oauthCallback()
     then:
-    controller.response.status == MOVED_TEMPORARILY.value()
+    controller.response.status == FOUND.value()
     isLoginHome()
   }
 
@@ -115,7 +116,7 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
     controller.oauthCallback()
     then:
     1 * mockConnectionFactoryLocator.getConnectionFactory(providerId) >> new TestTwitterConnectionFactory()
-    controller.response.status == MOVED_TEMPORARILY.value()
+    controller.response.status == FOUND.value()
     isLoginHome()
   }
 
@@ -130,7 +131,7 @@ class SpringSocialConnectControllerSpec extends spock.lang.Specification {
     when:
     controller.oauthCallback()
     then:
-    controller.response.status == MOVED_TEMPORARILY.value()
+    controller.response.status == FOUND.value()
     isLoginHome()
   }
 
