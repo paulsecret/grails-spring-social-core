@@ -51,9 +51,11 @@ grails.project.dependency.resolution = {
     mavenRepo "http://maven.springframework.org/milestone"
 
     mavenRepo "http://grails.org/plugins"
+
+    mavenRepo "http://repo.springsource.org/libs-snapshot"
   }
   dependencies {
-    def springSocialVersion = "1.0.3.RELEASE"
+    def springSocialVersion = "1.1.0.BUILD-SNAPSHOT"
 
     compile("org.springframework.social:spring-social-core:${springSocialVersion}") { transitive = false }
     compile("org.springframework.social:spring-social-web:${springSocialVersion}") { transitive = false }
