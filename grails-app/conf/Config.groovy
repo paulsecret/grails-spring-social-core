@@ -1,4 +1,4 @@
-/* Copyright 2012 the original author or authors.
+/* Copyright 2013 Domingo Suarez Torres.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,30 @@ grails.views.gsp.encoding = "UTF-8"
 
 grails.doc.authors = "Domingo Suarez Torres"
 grails.doc.license = "Apache 2"
-grails.doc.copyright = "Copyright Domingo Suarez Torres 2012"
-grails.doc.footer = "Spring Social Core"
+grails.doc.copyright = "Copyright Domingo Suarez Torres 2013"
+grails.doc.footer = "Grails Spring Social Core"
 
+// configuration for plugin testing - will not be included in the plugin zip
+
+log4j = {
+  // Example of changing the log pattern for the default console
+  // appender:
+  //
+  //appenders {
+  //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+  //}
+
+  error 'org.codehaus.groovy.grails.web.servlet',  //  controllers
+    'org.codehaus.groovy.grails.web.pages', //  GSP
+    'org.codehaus.groovy.grails.web.sitemesh', //  layouts
+    'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+    'org.codehaus.groovy.grails.web.mapping', // URL mapping
+    'org.codehaus.groovy.grails.commons', // core / classloading
+    'org.codehaus.groovy.grails.plugins', // plugins
+    'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
+    'org.springframework',
+    'org.hibernate',
+    'net.sf.ehcache.hibernate'
+
+  warn 'org.mortbay.log'
+}

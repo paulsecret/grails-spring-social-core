@@ -1,4 +1,4 @@
-/* Copyright 2012 the original author or authors.
+/* Copyright 2013 Domingo Suarez Torres.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,6 @@ class SpringSocialCoreConfig {
 
   @Bean
   @Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
-
   ConnectionRepository connectionRepository() {
     def authentication = SecurityContextHolder.getContext().getAuthentication()
     if (!authentication) {

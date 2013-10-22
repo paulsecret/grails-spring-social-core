@@ -1,4 +1,4 @@
-/* Copyright 2012 the original author or authors.
+/* Copyright 2013 Domingo Suarez Torres.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ class ConnectionFactoryConfigurer {
   void postProcessBeanFactory() {
     //TODO: Document the automatic ConnectionFactory registration
     def connectionFactories = appCtx.getBeansOfType(ConnectionFactory)
-    connectionFactories.each {connectionFactoryKey, connectionFactory ->
+    connectionFactories.each { connectionFactoryKey, connectionFactory ->
       ((ConnectionFactoryRegistry) connectionFactoryLocator).addConnectionFactory(connectionFactory)
     }
   }

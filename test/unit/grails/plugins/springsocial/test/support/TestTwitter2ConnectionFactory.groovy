@@ -12,6 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-springsocial {
-  postDisconnectUri = "/"
+package grails.plugins.springsocial.test.support
+
+import org.springframework.social.connect.support.OAuth1ConnectionFactory
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: domix
+ * Date: 02/05/13
+ * Time: 15:41
+ * To change this template use File | Settings | File Templates.
+ */
+class TestTwitter2ConnectionFactory extends OAuth1ConnectionFactory<TestTwitterApi> {
+
+  TestTwitter2ConnectionFactory() {
+    super("twitter2", new TestTwitterServiceProvider(), null)
+  }
 }

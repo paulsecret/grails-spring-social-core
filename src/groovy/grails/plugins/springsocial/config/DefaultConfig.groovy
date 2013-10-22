@@ -12,6 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-springsocial {
-  postDisconnectUri = "/"
+package grails.plugins.springsocial.config
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: domix
+ * Date: 02/05/13
+ * Time: 12:29
+ * To change this template use File | Settings | File Templates.
+ */
+class DefaultConfig {
+  final static String loginUrl = '/'
+  final static String pageConnectedHome = '/'
+  final static String pageDeniedHome = '/'
+  final static String pagePostDisconnectHome = '/'
 }
