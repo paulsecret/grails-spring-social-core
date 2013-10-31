@@ -1,4 +1,5 @@
-/* Copyright 2012 the original author or authors.
+
+/* Copyright 2013 Domingo Suarez Torres.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -37,12 +38,12 @@ grails.project.dependency.resolution = {
     grailsRepo "http://grails.org/plugins"
   }
   dependencies {
-    def springSocialVersion = "1.0.2.RELEASE"
+    def springSocialVersion = "1.1.0.M4"
 
     compile("org.springframework.social:spring-social-core:${springSocialVersion}") { transitive = false }
     compile("org.springframework.social:spring-social-web:${springSocialVersion}") { transitive = false }
 
-    compile("org.springframework.security:spring-security-crypto:3.1.0.RELEASE") { transitive = false }
+    compile("org.springframework.security:spring-security-crypto:3.1.4.RELEASE") { transitive = false }
     compile("javax.inject:javax.inject:1")
   }
   plugins {
@@ -70,4 +71,6 @@ coverage {
       "SpringSocialCoreDefaultConfig*"
   ]
   enabledByDefault = true
+    xml = true
+    html = true
 }

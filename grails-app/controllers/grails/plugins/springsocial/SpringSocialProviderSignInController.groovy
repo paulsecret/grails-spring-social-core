@@ -34,6 +34,7 @@ class SpringSocialProviderSignInController {
   def signInService
   def usersConnectionRepository
   def requestCache
+  def grailsApplication
   ConnectSupport webSupport = new GrailsConnectSupport(mapping: 'springSocialSignIn')
   static allowedMethods = [signin: 'POST', oauthCallback: 'GET', disconnect: 'DELETE']
 
@@ -54,8 +55,7 @@ class SpringSocialProviderSignInController {
     Assert.hasText(providerId, 'The providerId is required')
 
     NativeWebRequest nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
-    def config = SpringSocialUtils.config.get(providerId)
-
+    ConfigObject config = getConfigByProviderId(providerId)
     ConnectionFactory connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
     Connection connection = webSupport.completeConnection(connectionFactory, nativeWebRequest);
     String url = handleSignIn(connection, nativeWebRequest, config);
@@ -88,4 +88,8 @@ class SpringSocialProviderSignInController {
     }
     result
   }
+
+    private ConfigObject getConfigByProviderId(String providerId) {
+        grailsApplication.config.grails.plugins.springsocial?.get(providerId)
+    }
 }

@@ -247,9 +247,9 @@ class SpringSocialConnectController {
     config?.page?.postDisconnectHome ?: DefaultConfig.pagePostDisconnectHome
   }
 
-  private ConfigObject getConfigByProviderId(String providerId) {
-    grailsApplication.config.springsocial?.get(providerId)
-  }
+    private ConfigObject getConfigByProviderId(String providerId) {
+        grailsApplication.config.plugins.config.springsocial?.get(providerId)
+    }
 
   @SuppressWarnings(["rawtypes", "unchecked"])
   private void preConnect(ConnectionFactory<?> connectionFactory, MultiValueMap<String, String> parameters, WebRequest request) {

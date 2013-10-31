@@ -29,12 +29,18 @@ import org.springframework.social.oauth2.GrantType
 import org.springframework.social.oauth2.OAuth2Operations
 import org.springframework.social.oauth2.OAuth2Parameters
 import org.springframework.util.Assert
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.context.request.RequestAttributes
 
+import static java.util.Arrays.asList
+import static java.util.Arrays.asList
+
 class GrailsConnectSupport extends ConnectSupport {
-  private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
+    private static final java.lang.String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
+    private static final java.lang.String OAUTH2_STATE_ATTRIBUTE = "oauth2State";
   String mapping
   Boolean useAuthenticateUrl
 
@@ -49,13 +55,29 @@ class GrailsConnectSupport extends ConnectSupport {
     }
   }
 
-  public Connection<?> completeConnection(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
-    String code = request.getParameter("code")
-    def providerId = connectionFactory.getProviderId()
-    def curl = callbackUrl(request, providerId)
-    AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, curl, null)
-    return connectionFactory.createConnection(accessGrant)
-  }
+    /**
+     * Complete the connection to the OAuth2 provider.
+     * @param connectionFactory the service provider's connection factory e.g. FacebookConnectionFactory
+     * @param request the current web request
+     * @return a new connection to the service provider
+     */
+    public Connection<?> completeConnection(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
+        if (connectionFactory.supportsStateParameter()) {
+            verifyStateParameter(request);
+        }
+
+        String code = request.getParameter("code");
+        try {
+            def providerId = connectionFactory.getProviderId()
+            def curl = callbackUrl(request, providerId)
+            AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, curl, null)
+            return connectionFactory.createConnection(accessGrant)
+        } catch (HttpClientErrorException e) {
+            logger.warn("HttpClientErrorException while completing connection: " + e.getMessage());
+            logger.warn("      Response body: " + e.getResponseBodyAsString());
+            throw e;
+        }
+    }
 
   private String callbackUrl(NativeWebRequest request, String providerId) {
     return new ApplicationTagLib().createLink(mapping: mapping, absolute: true, params: [providerId: providerId])
@@ -72,6 +94,7 @@ class GrailsConnectSupport extends ConnectSupport {
     return buildOAuth1Url(oauthOperations, requestToken.getValue(), parameters);
   }
 
+
   private OAuthToken fetchRequestToken(NativeWebRequest request, OAuth1Operations oauthOperations, String providerId) {
     if (oauthOperations.getVersion() == OAuth1Version.CORE_10_REVISION_A) {
       return oauthOperations.fetchRequestToken(callbackUrl(request, providerId), null);
@@ -79,23 +102,52 @@ class GrailsConnectSupport extends ConnectSupport {
     return oauthOperations.fetchRequestToken(null, null);
   }
 
-  private String buildOAuth2Url(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
-    OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-    OAuth2Parameters parameters = getOAuth2Parameters(request, additionalParameters, connectionFactory.providerId);
-    if (useAuthenticateUrl) {
-      return oauthOperations.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);
-    } else {
-      return oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, parameters);
+    private String buildOAuth2Url(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
+        OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
+        String defaultScope = connectionFactory.getScope();
+        OAuth2Parameters parameters = getOAuth2Parameters(request, defaultScope, additionalParameters, connectionFactory.providerId);
+        String state = connectionFactory.generateState();
+        parameters.add("state", state);
+        request.setAttribute(OAUTH2_STATE_ATTRIBUTE, state, RequestAttributes.SCOPE_SESSION);
+        if (useAuthenticateUrl) {
+            return oauthOperations.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);
+        } else {
+            return oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, parameters);
+        }
     }
-  }
 
-  private OAuth2Parameters getOAuth2Parameters(NativeWebRequest request, MultiValueMap<String, String> additionalParameters, String providerId) {
-    OAuth2Parameters parameters = new OAuth2Parameters(additionalParameters);
-    parameters.setRedirectUri(callbackUrl(request, providerId));
-    String scope = request.getParameter("scope");
-    if (scope != null) {
-      parameters.setScope(scope);
+    private OAuth2Parameters getOAuth2Parameters(NativeWebRequest request, String defaultScope, MultiValueMap<String, String> additionalParameters, String providerId) {
+        OAuth2Parameters parameters = new OAuth2Parameters(additionalParameters);
+        parameters.putAll(getRequestParameters(request, "scope"));
+        parameters.setRedirectUri(callbackUrl(request, providerId));
+        String scope = request.getParameter("scope");
+        if (scope != null) {
+            parameters.setScope(scope);
+        } else if (defaultScope != null) {
+            parameters.setScope(defaultScope);
+        }
+        return parameters;
     }
-    return parameters;
-  }
+
+    private OAuth2Parameters getOAuth2Parameters(NativeWebRequest request, MultiValueMap<String, String> additionalParameters, String providerId) {
+        OAuth2Parameters parameters = new OAuth2Parameters(additionalParameters);
+        parameters.setRedirectUri(callbackUrl(request, providerId));
+        String scope = request.getParameter("scope");
+        if (scope != null) {
+            parameters.setScope(scope);
+        }
+        return parameters;
+    }
+
+
+    private MultiValueMap<String, String> getRequestParameters(NativeWebRequest request, String... ignoredParameters) {
+        List<String> ignoredParameterList = asList(ignoredParameters);
+        MultiValueMap<String, String> convertedMap = new LinkedMultiValueMap<String, String>();
+        for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
+            if (!ignoredParameterList.contains(entry.getKey())) {
+                convertedMap.put(entry.getKey(), asList(entry.getValue()));
+            }
+        }
+        return convertedMap;
+    }
 }
