@@ -73,8 +73,8 @@ class GrailsConnectSupport extends ConnectSupport {
             AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, curl, null)
             return connectionFactory.createConnection(accessGrant)
         } catch (HttpClientErrorException e) {
-            logger.warn("HttpClientErrorException while completing connection: " + e.getMessage());
-            logger.warn("      Response body: " + e.getResponseBodyAsString());
+            log.warn("HttpClientErrorException while completing connection: " + e.getMessage());
+            log.warn("      Response body: " + e.getResponseBodyAsString());
             throw e;
         }
     }
