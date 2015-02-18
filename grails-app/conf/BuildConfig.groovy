@@ -1,4 +1,3 @@
-
 /* Copyright 2013 Domingo Suarez Torres.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,58 +15,54 @@
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
+
 grails.project.dependency.resolution = {
-  inherits("global") {
-    // uncomment to disable ehcache
-    // excludes 'ehcache'
-  }
-  log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
-  repositories {
-    grailsPlugins()
-    grailsHome()
-    grailsCentral()
-
-    // from public Maven repositories
-    mavenLocal()
-    mavenCentral()
-
-    mavenRepo "http://maven.springframework.org/release"
-    mavenRepo "http://maven.springframework.org/snapshot"
-    mavenRepo "http://maven.springframework.org/milestone"
-
-    grailsRepo "http://grails.org/plugins"
-  }
-  dependencies {
-    def springSocialVersion = "1.1.0.RELEASE"
-
-    compile("org.springframework.social:spring-social-core:${springSocialVersion}") { transitive = false }
-    compile("org.springframework.social:spring-social-web:${springSocialVersion}") { transitive = false }
-
-    compile("org.springframework.security:spring-security-crypto:3.2.5.RELEASE") { transitive = false }
-    compile("javax.inject:javax.inject:1")
-  }
-  plugins {
-    /*
-    This validation is for prevent load the following plugins in previous Grails versions.
-    In some Grails versions from 1.3.* the 'export = false' does not work. For Grails 2.* works properly
-    */
-
-    if (grailsVersion.startsWith('2')) {
-      compile ":spring-security-core:2.0-RC4"
-      build ':release:3.0.1', ':rest-client-builder:1.0.3', { export = false }
+    inherits("global") {
+        // uncomment to disable ehcache
+        // excludes 'ehcache'
     }
-  }
+
+    log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+
+    repositories {
+        grailsPlugins()
+        grailsHome()
+        grailsCentral()
+
+        // from public Maven repositories
+        mavenLocal()
+        mavenCentral()
+
+        mavenRepo "http://maven.springframework.org/release"
+        mavenRepo "http://maven.springframework.org/snapshot"
+        mavenRepo "http://maven.springframework.org/milestone"
+
+        grailsRepo "http://grails.org/plugins"
+    }
+
+    dependencies {
+        compile "org.springframework.social:spring-social-core:1.1.0.RELEASE"
+        compile "org.springframework.social:spring-social-web:1.1.0.RELEASE"
+        compile "org.springframework.security:spring-security-crypto:3.2.5.RELEASE"
+        compile "javax.inject:javax.inject:1"
+    }
+
+    plugins {
+        compile ":spring-security-core:2.0-RC4"
+
+        build ':release:3.0.1', ':rest-client-builder:1.0.3', { export = false }
+    }
 }
 
 grails.release.scm.enabled = false
 grails.project.repos.default = "grailsCentral"
 
 coverage {
-  exclusions = [
-      "DefaultSpringSocialConfig*",
-      "SpringSocialCoreDefaultConfig*"
-  ]
-  enabledByDefault = true
+    exclusions = [
+            "DefaultSpringSocialConfig*",
+            "SpringSocialCoreDefaultConfig*"
+    ]
+    enabledByDefault = true
     xml = true
     html = true
 }
