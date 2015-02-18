@@ -14,6 +14,7 @@
  */
 package grails.plugins.springsocial.signin
 
+import grails.plugin.springsecurity.SpringSecurityService
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.context.ApplicationContext
@@ -21,7 +22,6 @@ import org.springframework.context.ApplicationContextAware
 import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
 import org.codehaus.groovy.grails.commons.ApplicationHolder
-import grails.plugins.springsecurity.SpringSecurityService
 
 
 class SignInUtils{

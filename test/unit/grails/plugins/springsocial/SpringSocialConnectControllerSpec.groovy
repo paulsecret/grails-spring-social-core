@@ -14,7 +14,7 @@
  */
 package grails.plugins.springsocial
 
-import grails.plugins.springsecurity.SpringSecurityService
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugins.springsocial.test.support.TestTwitterConnectionFactory
 import grails.plugins.springsocial.test.support.TestTwitterServiceProvider
 import grails.test.mixin.TestFor
@@ -110,7 +110,7 @@ class SpringSocialConnectControllerSpec extends Specification {
     String providerId = 'twitter'
     def mockConfig = new ConfigObject()
     mockConfig.springsocial.twitter.foo = 'foo'
-    controller.grailsApplication.config = mockConfig
+    controller.grailsApplication.config.plugins.config = mockConfig
     when:
     controller.params.providerId = providerId
     controller.oauthCallback()
@@ -125,7 +125,7 @@ class SpringSocialConnectControllerSpec extends Specification {
     String providerId = 'twitter'
     def mockConfig = new ConfigObject()
     mockConfig.springsocial.twitter.foo = 'foo'
-    controller.grailsApplication.config = mockConfig
+    controller.grailsApplication.config.plugins.config = mockConfig
     controller.params.denied = 'true'
     controller.params.providerId = providerId
     when:

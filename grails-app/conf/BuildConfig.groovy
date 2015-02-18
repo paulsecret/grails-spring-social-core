@@ -38,12 +38,12 @@ grails.project.dependency.resolution = {
     grailsRepo "http://grails.org/plugins"
   }
   dependencies {
-    def springSocialVersion = "1.1.0.M4"
+    def springSocialVersion = "1.1.0.RELEASE"
 
     compile("org.springframework.social:spring-social-core:${springSocialVersion}") { transitive = false }
     compile("org.springframework.social:spring-social-web:${springSocialVersion}") { transitive = false }
 
-    compile("org.springframework.security:spring-security-crypto:3.1.4.RELEASE") { transitive = false }
+    compile("org.springframework.security:spring-security-crypto:3.2.5.RELEASE") { transitive = false }
     compile("javax.inject:javax.inject:1")
   }
   plugins {
@@ -53,11 +53,8 @@ grails.project.dependency.resolution = {
     */
 
     if (grailsVersion.startsWith('2')) {
-      compile(":spring-security-core:1.2.7.3")
-      test(":code-coverage:1.2.5") { export = false }
-      build(":release:2.0.0") { export = false }
-      build(":rest-client-builder:1.0.2") { export = false }
-	  compile ':svn:1.0.2'
+      compile ":spring-security-core:2.0-RC4"
+      build ':release:3.0.1', ':rest-client-builder:1.0.3', { export = false }
     }
   }
 }
