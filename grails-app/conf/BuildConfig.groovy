@@ -41,8 +41,8 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
-        compile "org.springframework.social:spring-social-core:1.1.0.RELEASE", { transitive = false }
-        compile "org.springframework.social:spring-social-web:1.1.0.RELEASE", { transitive = false }
+        compile "org.springframework.social:spring-social-core:1.1.4.RELEASE", { transitive = false }
+        compile "org.springframework.social:spring-social-web:1.1.4.RELEASE", { transitive = false }
         compile "org.springframework.security:spring-security-crypto:3.2.5.RELEASE", { transitive = false }
         compile "javax.inject:javax.inject:1"
     }
