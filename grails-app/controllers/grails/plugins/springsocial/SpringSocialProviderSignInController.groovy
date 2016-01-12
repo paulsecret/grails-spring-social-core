@@ -20,7 +20,6 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
 import org.springframework.social.connect.Connection
 import org.springframework.social.connect.ConnectionFactory
 import org.springframework.social.connect.ConnectionFactoryLocator
-import org.springframework.social.connect.ConnectionRepository
 import org.springframework.social.connect.web.ConnectSupport
 import org.springframework.social.connect.web.ProviderSignInAttempt
 import org.springframework.social.connect.web.SignInAdapter
