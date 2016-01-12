@@ -91,7 +91,7 @@ class SpringSocialProviderSignInController {
             //TODO: handle redirect when multiple users found
             //result = redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "multiple_users").build().toString());
         }
-        
+
         return result
     }
 
