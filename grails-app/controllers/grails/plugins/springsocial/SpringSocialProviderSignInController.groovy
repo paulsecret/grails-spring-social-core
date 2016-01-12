@@ -66,7 +66,7 @@ class SpringSocialProviderSignInController {
         redirect url: url
     }
 
-    private String handleSignIn(Connection connection, GrailsWebRequest request, config) {
+    protected String handleSignIn(Connection connection, GrailsWebRequest request, config) {
         String result
         List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection)
         if (userIds.size() == 0) {
@@ -90,7 +90,8 @@ class SpringSocialProviderSignInController {
             //TODO: handle redirect when multiple users found
             //result = redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "multiple_users").build().toString());
         }
-        result
+        
+        return result
     }
 
     private ConfigObject getConfigByProviderId(String providerId) {
