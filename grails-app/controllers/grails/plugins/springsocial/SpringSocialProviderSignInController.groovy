@@ -20,7 +20,6 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
 import org.springframework.social.connect.Connection
 import org.springframework.social.connect.ConnectionFactory
 import org.springframework.social.connect.ConnectionFactoryLocator
-import org.springframework.social.connect.ConnectionRepository
 import org.springframework.social.connect.web.ConnectSupport
 import org.springframework.social.connect.web.ProviderSignInAttempt
 import org.springframework.social.connect.web.SignInAdapter
@@ -29,65 +28,72 @@ import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.context.request.RequestAttributes
 
 class SpringSocialProviderSignInController {
-  ConnectionFactoryLocator connectionFactoryLocator
-  ConnectionRepository connectionRepository
-  def signInService
-  def usersConnectionRepository
-  def requestCache
-  def grailsApplication
-  ConnectSupport webSupport = new GrailsConnectSupport(mapping: 'springSocialSignIn')
-  static allowedMethods = [signin: 'POST', oauthCallback: 'GET', disconnect: 'DELETE']
 
-  def signin() {
-    String providerId = params.providerId
+    ConnectionFactoryLocator connectionFactoryLocator
 
-    Assert.hasText(providerId, 'The providerId is required')
+    ConnectSupport webSupport = new GrailsConnectSupport(mapping: 'springSocialSignIn')
 
-    ConnectionFactory connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
-    NativeWebRequest nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
-    String url = webSupport.buildOAuthUrl(connectionFactory, nativeWebRequest)
-    redirect url: url
-  }
+    def usersConnectionRepository
 
-  def oauthCallback() {
-    String providerId = params.providerId
+    def requestCache
 
-    Assert.hasText(providerId, 'The providerId is required')
+    def grailsApplication
 
-    NativeWebRequest nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
-    ConfigObject config = getConfigByProviderId(providerId)
-    ConnectionFactory connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
-    Connection connection = webSupport.completeConnection(connectionFactory, nativeWebRequest);
-    String url = handleSignIn(connection, nativeWebRequest, config);
-    redirect url: url
-  }
+    static allowedMethods = [signin: 'POST', oauthCallback: 'GET', disconnect: 'DELETE']
 
-  private String handleSignIn(Connection connection, GrailsWebRequest request, config) {
-    String result
-    List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection)
-    if (userIds.size() == 0) {
-      log.debug('No user found in the repository, creating a new one...')
+    def signin() {
+        String providerId = params.providerId
 
-      ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, usersConnectionRepository)
-      request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, RequestAttributes.SCOPE_SESSION)
-      //TODO: Document this setting
-      result = request.session.ss_oauth_redirect_on_signIn_attempt ?: config.page.handleSignIn
-    } else if (userIds.size() == 1) {
-      log.debug('User found in the repository...')
+        Assert.hasText(providerId, 'The providerId is required')
 
-      usersConnectionRepository.createConnectionRepository(userIds.get(0)).updateConnection(connection)
-      SignInAdapter signInAdapter = new SpringSocialSimpleSignInAdapter(requestCache)
-      String originalUrl = signInAdapter.signIn(userIds.get(0), connection, request)
-      log.debug("originalUrl: ${originalUrl}")
-      //TODO: Document this setting
-      result = originalUrl ?: config.postSignInUrl
-    } else {
-      log.error('Multiple Users found in the repository...')
-      //TODO: handle redirect when multiple users found
-      //result = redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "multiple_users").build().toString());
+        ConnectionFactory connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
+        NativeWebRequest nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
+        String url = webSupport.buildOAuthUrl(connectionFactory, nativeWebRequest)
+
+        redirect url: url
     }
-    result
-  }
+
+    def oauthCallback() {
+        String providerId = params.providerId
+
+        Assert.hasText(providerId, 'The providerId is required')
+
+        NativeWebRequest nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
+        ConfigObject config = getConfigByProviderId(providerId)
+        ConnectionFactory connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
+        Connection connection = webSupport.completeConnection(connectionFactory, nativeWebRequest);
+        String url = handleSignIn(connection, nativeWebRequest, config);
+
+        redirect url: url
+    }
+
+    protected String handleSignIn(Connection connection, GrailsWebRequest request, config) {
+        String result
+        List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection)
+        if (userIds.size() == 0) {
+            log.debug('No user found in the repository, creating a new one...')
+
+            ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, usersConnectionRepository)
+            request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, RequestAttributes.SCOPE_SESSION)
+            //TODO: Document this setting
+            result = request.session.ss_oauth_redirect_on_signIn_attempt ?: config.page.handleSignIn
+        } else if (userIds.size() == 1) {
+            log.debug('User found in the repository...')
+
+            usersConnectionRepository.createConnectionRepository(userIds.get(0)).updateConnection(connection)
+            SignInAdapter signInAdapter = new SpringSocialSimpleSignInAdapter(requestCache)
+            String originalUrl = signInAdapter.signIn(userIds.get(0), connection, request)
+            log.debug("originalUrl: ${originalUrl}")
+            //TODO: Document this setting
+            result = originalUrl ?: config.postSignInUrl
+        } else {
+            log.error('Multiple Users found in the repository...')
+            //TODO: handle redirect when multiple users found
+            //result = redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "multiple_users").build().toString());
+        }
+
+        return result
+    }
 
     private ConfigObject getConfigByProviderId(String providerId) {
         grailsApplication.config.grails.plugins.springsocial?.get(providerId)
