@@ -29,13 +29,17 @@ import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.context.request.RequestAttributes
 
 class SpringSocialProviderSignInController {
+
     ConnectionFactoryLocator connectionFactoryLocator
-    ConnectionRepository connectionRepository
-    def signInService
-    def usersConnectionRepository
-    def requestCache
-    def grailsApplication
+
     ConnectSupport webSupport = new GrailsConnectSupport(mapping: 'springSocialSignIn')
+
+    def usersConnectionRepository
+
+    def requestCache
+
+    def grailsApplication
+
     static allowedMethods = [signin: 'POST', oauthCallback: 'GET', disconnect: 'DELETE']
 
     def signin() {
