@@ -50,6 +50,7 @@ class SpringSocialProviderSignInController {
         ConnectionFactory connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId)
         NativeWebRequest nativeWebRequest = new GrailsWebRequest(request, response, servletContext)
         String url = webSupport.buildOAuthUrl(connectionFactory, nativeWebRequest)
+
         redirect url: url
     }
 
@@ -63,6 +64,7 @@ class SpringSocialProviderSignInController {
         ConnectionFactory connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
         Connection connection = webSupport.completeConnection(connectionFactory, nativeWebRequest);
         String url = handleSignIn(connection, nativeWebRequest, config);
+
         redirect url: url
     }
 
